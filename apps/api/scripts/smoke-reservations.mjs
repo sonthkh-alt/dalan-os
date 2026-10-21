@@ -68,6 +68,18 @@ check('danh sách khu vực công khai có phòng VIP', pubAreas.status === 200 
 const created = await call('POST', '/public/reservations', { branchId: center.id, customerName: 'Nguyễn Smoke', customerPhone: phone, partySize: 6, reservedAt: d1.iso, occasion: 'Sinh nhật', specialRequests: 'Ghế trẻ em', marketingConsent: true });
 check('khách đặt bàn thành công, tự xác nhận', created.status === 201 && created.json?.status === 'CONFIRMED' && created.json.code, created.json);
 const code = created.json?.code;
+// Tin xác nhận phải được gửi trước khi khách hủy (bộ xử lý không gửi "đã xác nhận" cho đặt bàn đã hủy)
+{
+  let found = false;
+  const guestToken = token;
+  token = (await call('POST', '/auth/staff/login', { login: 'ADMIN', password: 'Dalan@2026' })).json.accessToken;
+  for (let i = 0; i < 40 && !found; i++) {
+    found = (await call('GET', `/notifications?templateCode=RESERVATION_CONFIRMED&recipient=${phone.slice(1)}`)).json?.items?.length >= 1;
+    if (!found) await new Promise((r) => setTimeout(r, 400));
+  }
+  token = guestToken;
+  check('xác nhận đặt bàn gửi ZNS (mock) qua outbox', found, null);
+}
 const tooSoon = await call('POST', '/public/reservations', { branchId: center.id, customerName: 'A', customerPhone: phone, partySize: 2, reservedAt: new Date(Date.now() + 5 * 60_000).toISOString() });
 check('đặt quá gần giờ bị từ chối', tooSoon.status === 400 && tooSoon.json?.code === 'TOO_SOON', tooSoon.json);
 const badPhone = await call('POST', '/public/reservations', { branchId: center.id, customerName: 'A', customerPhone: 'abcdefgh', partySize: 2, reservedAt: d1.iso });
@@ -158,15 +170,15 @@ check('hủy lần hai bị chặn (409)', cancelAgain.status === 409, cancelAga
   check('NotificationLog có bản ghi nhắc lịch SENT', logs.json?.items?.some((l) => l.status === 'SENT'), logs.json?.items?.length);
 }
 
-// 7. Thông báo xác nhận đặt bàn được gửi qua outbox (chờ relay)
+// 7. Thông báo hủy đặt bàn được gửi qua outbox (chờ relay)
 {
   let found = false;
   for (let i = 0; i < 40 && !found; i++) {
-    const logs = await call('GET', `/notifications?templateCode=RESERVATION_CONFIRMED&recipient=${phone.slice(1)}`);
+    const logs = await call('GET', `/notifications?templateCode=RESERVATION_CANCELLED&recipient=${phone.slice(1)}`);
     found = logs.json?.items?.length >= 1;
     if (!found) await new Promise((r) => setTimeout(r, 400));
   }
-  check('xác nhận đặt bàn gửi ZNS (mock) qua outbox', found, null);
+  check('khách tự hủy → gửi ZNS báo hủy (mock) qua outbox', found, null);
 }
 
 // 8. Khách hàng
