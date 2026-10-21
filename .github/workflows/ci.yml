@@ -52,6 +52,7 @@ jobs:
           node apps/api/scripts/smoke-payments.mjs http://localhost:4000
           node apps/api/scripts/smoke-events-inventory.mjs http://localhost:4000
           node apps/api/scripts/smoke-regressions.mjs http://localhost:4000
+          node apps/api/scripts/check-stock-race.mjs http://localhost:4000
       - run: pnpm --filter @dalan/staff --filter @dalan/guest --filter @dalan/print-bridge --filter @dalan/zalo-mini build
       - run: pnpm lint
         continue-on-error: true

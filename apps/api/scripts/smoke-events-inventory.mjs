@@ -220,6 +220,8 @@ for (const t of tickets.json) await call('POST', `/kitchen/tickets/${t.id}/bump`
 const bill = await call('POST', `/sessions/${session2.json.id}/bills`, { mode: 'ALL' });
 const paid = await call('POST', `/bills/${bill.json[0].id}/payments`, { method: 'CASH', tenderedAmount: Number(bill.json[0].total) });
 check('bill 10 nem = 250.000 trả tiền mặt', paid.status === 201 && paid.json?.bill?.status === 'PAID' && Number(bill.json[0].total) === 250_000, { status: paid.json?.bill?.status, total: bill.json?.[0]?.total, o: order2.status });
+// Trừ kho chạy bất đồng bộ qua relay outbox; phát lại (idempotent) để báo cáo giá vốn không phụ thuộc thời điểm
+await call('POST', `/inventory/replay-order/${order2.json.id}`);
 
 // Kiểm kê: đếm thịt thiếu 100 g
 const stocktake = await call('POST', '/stocktakes', { warehouseId: main.id, stockItemIds: [thit.id, mien.id] });

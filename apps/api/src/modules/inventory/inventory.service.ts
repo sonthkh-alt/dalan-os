@@ -19,6 +19,11 @@ const round3 = (n: number) => Math.round(n * 1000) / 1000;
 const fromDateOnly = (s: string) => new Date(`${s}T00:00:00+07:00`);
 const nextDay = (s: string) => new Date(fromDateOnly(s).getTime() + 86_400_000);
 
+/** Khóa tư vấn PostgreSQL theo dòng món, tự nhả khi giao dịch kết thúc (dùng chung mọi bản API). */
+async function lockOrderLine(tx: Tx, orderLineId: string): Promise<void> {
+  await tx.$queryRaw`SELECT 1 FROM (SELECT pg_advisory_xact_lock(hashtext(${`stock:${orderLineId}`}))) AS l`;
+}
+
 interface MovementInput {
   warehouseId: string;
   stockItemId: string;
@@ -526,8 +531,6 @@ export class InventoryService implements OnModuleInit {
     if (!e.branchId || lineIds.length === 0) return;
     const lines = await this.prisma.orderLine.findMany({ where: { id: { in: lineIds }, itemId: { not: null } } });
     for (const line of lines) {
-      const already = await this.prisma.stockMovement.count({ where: { kind: 'SALE', refType: 'OrderLine', refId: line.id } });
-      if (already > 0) continue;
       const recipe =
         (await this.prisma.recipe.findFirst({ where: { itemId: line.itemId!, variantId: line.variantId, modifierOptionId: null, isActive: true }, include: { lines: { include: { stockItem: true } } } })) ??
         (line.variantId ? await this.prisma.recipe.findFirst({ where: { itemId: line.itemId!, variantId: null, modifierOptionId: null, isActive: true }, include: { lines: { include: { stockItem: true } } } }) : null);
@@ -536,6 +539,11 @@ export class InventoryService implements OnModuleInit {
       if (!warehouse) continue;
       const qty = Number(line.quantity);
       await this.prisma.$transaction(async (tx) => {
+        // Relay outbox, lệnh phát lại hoặc bản API khác có thể xử lý cùng dòng đồng thời:
+        // khóa theo dòng rồi mới kiểm tra, để chỉ trừ kho đúng một lần.
+        await lockOrderLine(tx, line.id);
+        const already = await tx.stockMovement.count({ where: { kind: 'SALE', refType: 'OrderLine', refId: line.id } });
+        if (already > 0) return;
         for (const rl of recipe.lines) {
           const need = (Number(rl.quantity) * (1 + rl.wastageBps / 10_000) * qty) / Number(recipe.yieldQty);
           await this.applyMovement(tx, { warehouseId: warehouse.id, stockItemId: rl.stockItemId, kind: 'SALE', quantity: -need, unitCost: Number(rl.stockItem.costPerBaseUnit), refType: 'OrderLine', refId: line.id, createdById: e.actorStaffId });
@@ -549,16 +557,19 @@ export class InventoryService implements OnModuleInit {
     if (!p.lineId || p.status !== 'VOIDED') return;
     const line = await this.prisma.orderLine.findUnique({ where: { id: p.lineId } });
     if (!line || line.wasteOnVoid) return;
-    const sales = await this.prisma.stockMovement.findMany({ where: { kind: 'SALE', refType: 'OrderLine', refId: line.id } });
-    if (sales.length === 0) return;
-    const returned = await this.prisma.stockMovement.count({ where: { kind: 'VOID_RETURN', refType: 'OrderLine', refId: line.id } });
-    if (returned > 0) return;
+    let count = 0;
     await this.prisma.$transaction(async (tx) => {
+      await lockOrderLine(tx, line.id);
+      const sales = await tx.stockMovement.findMany({ where: { kind: 'SALE', refType: 'OrderLine', refId: line.id } });
+      if (sales.length === 0) return;
+      const returned = await tx.stockMovement.count({ where: { kind: 'VOID_RETURN', refType: 'OrderLine', refId: line.id } });
+      if (returned > 0) return;
+      count = sales.length;
       for (const s of sales) {
         await this.applyMovement(tx, { warehouseId: s.warehouseId, stockItemId: s.stockItemId, kind: 'VOID_RETURN', quantity: -Number(s.quantity), unitCost: Number(s.unitCost), refType: 'OrderLine', refId: line.id, reason: line.voidReason ?? undefined, createdById: e.actorStaffId });
       }
     });
-    this.logger.log(`Hoàn kho cho dòng ${line.nameSnapshot} (${sales.length} nguyên liệu)`);
+    if (count > 0) this.logger.log(`Hoàn kho cho dòng ${line.nameSnapshot} (${count} nguyên liệu)`);
   }
 
   private async nextCode(prefix: string): Promise<string> {
