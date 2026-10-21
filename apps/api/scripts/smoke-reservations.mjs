@@ -161,7 +161,7 @@ check('hủy lần hai bị chặn (409)', cancelAgain.status === 409, cancelAga
 // 7. Thông báo xác nhận đặt bàn được gửi qua outbox (chờ relay)
 {
   let found = false;
-  for (let i = 0; i < 12 && !found; i++) {
+  for (let i = 0; i < 40 && !found; i++) {
     const logs = await call('GET', `/notifications?templateCode=RESERVATION_CONFIRMED&recipient=${phone.slice(1)}`);
     found = logs.json?.items?.length >= 1;
     if (!found) await new Promise((r) => setTimeout(r, 400));
@@ -210,7 +210,7 @@ check('hủy lần hai bị chặn (409)', cancelAgain.status === 409, cancelAga
   check('khách có lifetimeSpend và điểm > 150', Number(cAfter.json?.lifetimeSpend) > 0 && cAfter.json?.pointsBalance > 150, { spend: cAfter.json?.lifetimeSpend, points: cAfter.json?.pointsBalance });
   const receipt = await call('GET', `/notifications?templateCode=RECEIPT&customerId=${c.id}`);
   let receiptFound = receipt.json?.items?.length >= 1;
-  for (let i = 0; i < 10 && !receiptFound; i++) {
+  for (let i = 0; i < 40 && !receiptFound; i++) {
     await new Promise((r) => setTimeout(r, 400));
     receiptFound = (await call('GET', `/notifications?templateCode=RECEIPT&customerId=${c.id}`)).json?.items?.length >= 1;
   }

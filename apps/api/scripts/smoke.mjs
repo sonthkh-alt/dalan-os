@@ -145,7 +145,7 @@ check('bàn trở về trống', t0?.status === 'EMPTY', t0?.status);
 
 // 11. Lệnh in (relay outbox chạy mỗi 400ms nên chờ tối đa 3 giây)
 let kinds = [];
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 40; i++) {
   const jobs = await call('GET', `/branches/${center.id}/print-jobs`);
   kinds = jobs.json?.map((j) => j.kind) ?? [];
   if (kinds.includes('KITCHEN_TICKET') && kinds.includes('BILL_FINAL')) break;

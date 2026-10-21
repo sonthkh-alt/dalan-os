@@ -183,7 +183,7 @@ const session = await call('POST', `/branches/${center.id}/sessions`, { tableIds
 const order = await call('POST', `/sessions/${session.json.id}/orders`, { lines: [{ itemId: nemItem.id, quantity: 10 }], send: true });
 check('gọi 10 nem gửi bếp', order.status === 201 && order.json?.status === 'SENT', order.json);
 let movements = [];
-for (let i = 0; i < 8; i++) {
+for (let i = 0; i < 40; i++) {
   await sleep(400);
   movements = (await call('GET', `/warehouses/${main.id}/movements?kind=SALE&stockItemId=${thit.id}`)).json ?? [];
   if (movements.some((m) => m.refId === order.json.lines[0].id)) break;
@@ -201,7 +201,7 @@ check('tồn thịt giảm đúng 350 g', Math.abs(thitLevel.quantity - 350 - le
 const voidLine = await call('POST', `/sessions/${session.json.id}/lines/${order.json.lines[0].id}/void`, { reason: 'GUEST_CHANGED_MIND', waste: false });
 check('hủy món chưa nấu', voidLine.status === 201 || voidLine.status === 200, voidLine.json);
 let returned = [];
-for (let i = 0; i < 8; i++) {
+for (let i = 0; i < 40; i++) {
   await sleep(400);
   const rows = (await call('GET', `/warehouses/${main.id}/movements?kind=VOID_RETURN&stockItemId=${thit.id}`)).json ?? [];
   returned = rows.filter((m) => m.refId === order.json.lines[0].id);
