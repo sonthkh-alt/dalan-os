@@ -23,9 +23,8 @@ export function MenuAdmin() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-xl font-bold text-ink-900">Quản lý thực đơn</h1>
+        <h2 className="sr-only">Quản lý thực đơn</h2>
         <Segmented
-          className="ml-auto"
           value={tab}
           onChange={setTab}
           options={[

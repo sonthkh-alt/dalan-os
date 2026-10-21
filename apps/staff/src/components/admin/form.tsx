@@ -4,13 +4,14 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { codify } from '@dalan/domain';
 import { cn, moneyPlain } from '@/lib/utils';
 import type { Schedule } from '@/lib/queries-admin';
+import { fieldClass } from '@/components/ui/primitives';
 
 export function Card({ title, actions, children, className }: { title?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cn('rounded-2xl border border-ink-100 bg-white p-3 shadow-sm md:p-4', className)}>
+    <section className={cn('rounded-2xl bg-white p-4 shadow-card ring-1 ring-ink-900/[0.06] md:p-5', className)}>
       {(title || actions) && (
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          {title && <h2 className="text-base font-bold text-ink-900 md:text-lg">{title}</h2>}
+          {title && <h2 className="text-base font-bold tracking-tight text-ink-900 md:text-lg">{title}</h2>}
           {actions && <div className="ml-auto flex flex-wrap items-center gap-2">{actions}</div>}
         </div>
       )}
@@ -30,7 +31,7 @@ export function Toggle({ checked, onChange, label, hint, disabled }: { checked: 
         onClick={() => onChange(!checked)}
         className={cn('relative h-7 w-12 shrink-0 rounded-full transition-colors', checked ? 'bg-brand-700' : 'bg-ink-300')}
       >
-        <span className={cn('absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all', checked ? 'left-[22px]' : 'left-0.5')} />
+        <span className={cn('absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-card transition-all', checked ? 'left-[22px]' : 'left-0.5')} />
       </button>
       <span>
         <span className="block text-sm font-semibold text-ink-900">{label}</span>
@@ -40,7 +41,8 @@ export function Toggle({ checked, onChange, label, hint, disabled }: { checked: 
   );
 }
 
-const inputCls = 'min-h-[48px] w-full rounded-xl border border-ink-300 bg-white px-3 text-base text-ink-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 disabled:bg-ink-100';
+// Dùng chung lớp ô nhập của hệ thống thiết kế
+const inputCls = fieldClass;
 
 function Labeled({ label, hint, children }: { label?: string; hint?: ReactNode; children: ReactNode }) {
   return (

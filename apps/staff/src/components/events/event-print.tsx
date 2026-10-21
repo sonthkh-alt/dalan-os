@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { ArrowLeft, Printer } from 'lucide-react';
+import { Printer } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/components/ui/page-header';
 import { computeEventTotals } from '@dalan/domain';
 import { EVENT_KIND_LABELS } from '@dalan/contracts';
 import { errorMessage } from '@/lib/api';
@@ -58,14 +60,19 @@ export function EventPrint({ eventId, kind, version }: { eventId: string; kind: 
   return (
     <div className="print-root">
       <style>{PRINT_CSS}</style>
-      <div className="no-print sticky top-0 z-10 flex items-center gap-2 border-b border-ink-100 bg-white px-3 py-2">
-        <Link href={`/events/${eventId}`} className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-ink-100" aria-label="Quay lại tiệc">
-          <ArrowLeft className="h-6 w-6" />
-        </Link>
-        <span className="flex-1 font-bold">{title}</span>
-        <button type="button" onClick={() => window.print()} className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-700 px-4 font-semibold text-white hover:bg-brand-800">
-          <Printer className="h-5 w-5" /> In / Lưu PDF
-        </button>
+      <div className="no-print sticky top-0 z-10 border-b border-ink-100 bg-white">
+        <PageHeader
+          back={`/events/${eventId}`}
+          breadcrumb={[{ label: 'Tiệc', href: '/events' }, { label: q.data?.code ?? 'Hồ sơ tiệc', href: `/events/${eventId}` }, { label: kind === 'quote' ? 'Bản in báo giá' : 'Bản in BEO' }]}
+          title={title}
+          subtitle={q.data ? (q.data.companyName ?? q.data.contactName) : undefined}
+          className="py-2 md:py-3"
+          actions={
+            <Button onClick={() => window.print()}>
+              <Printer className="h-5 w-5" /> In / Lưu PDF
+            </Button>
+          }
+        />
       </div>
       {body}
     </div>

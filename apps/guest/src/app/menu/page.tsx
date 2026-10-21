@@ -1,24 +1,52 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { RefreshCw } from 'lucide-react';
 import type { BranchMenuItemView } from '@dalan/contracts';
 import { api } from '@/lib/api';
 import { useCart } from '@/lib/cart-store';
 import { useGuestMenu, useGuestToken } from '@/lib/guest-data';
-import { useGuestSession } from '@/lib/session-store';
+import { useHydrated } from '@/lib/hydrated';
+import { readLastBranch, saveLastBranch } from '@/lib/nav';
+import { findBranch } from '@/lib/branches';
+import { isSessionValid, useGuestSession } from '@/lib/session-store';
 import { SessionGate } from '@/components/SessionGate';
 import { MenuBrowser } from '@/components/MenuBrowser';
 import { ItemSheet } from '@/components/ItemSheet';
 import { CartBar } from '@/components/Cart';
-import { Button, EmptyState, Spinner, useToast } from '@/components/ui';
+import { MenuSkeleton } from '@/components/Skeletons';
+import { BranchPicker } from '@/components/BranchPicker';
+import { Button, EmptyState, useToast } from '@/components/ui';
+import { PublicMenu } from './[branchCode]/PublicMenu';
 
 export default function MenuPage() {
-  return (
-    <SessionGate>
-      <SessionMenu />
-    </SessionGate>
-  );
+  const hydrated = useHydrated();
+  const session = useGuestSession();
+  if (!hydrated) return <MenuSkeleton />;
+  if (isSessionValid(session)) {
+    return (
+      <SessionGate>
+        <SessionMenu />
+      </SessionGate>
+    );
+  }
+  return <PublicMenuHub />;
+}
+
+/** Chưa vào bàn: chọn cơ sở rồi xem thực đơn tham khảo (nhớ cơ sở gần nhất). */
+function PublicMenuHub() {
+  const [branch, setBranch] = useState<string | null>(() => {
+    const last = readLastBranch();
+    return last && findBranch(last) ? last : null;
+  });
+  const choose = useCallback((code: string | null) => {
+    if (code) saveLastBranch(code);
+    setBranch(code);
+    window.scrollTo({ top: 0 });
+  }, []);
+  if (!branch) return <BranchPicker onPick={choose} />;
+  return <PublicMenu branchCode={branch} onSwitchBranch={choose} />;
 }
 
 function SessionMenu() {
@@ -35,15 +63,19 @@ function SessionMenu() {
     bindCart(sessionId);
   }, [sessionId, bindCart]);
 
-  if (menu.isPending) {
-    return (
-      <div className="flex justify-center py-20">
-        <Spinner />
-      </div>
-    );
-  }
+  if (menu.isPending) return <MenuSkeleton />;
   if (menu.isError || !menu.data) {
-    return <EmptyState title={tc('errorGeneric')} action={<Button variant="secondary" onClick={() => menu.refetch()}>{tc('retry')}</Button>} />;
+    return (
+      <EmptyState
+        icon={<RefreshCw className="h-8 w-8" />}
+        title={tc('errorGeneric')}
+        action={
+          <Button variant="secondary" onClick={() => menu.refetch()}>
+            {tc('retry')}
+          </Button>
+        }
+      />
+    );
   }
 
   const askStaff = async (item: BranchMenuItemView) => {
@@ -64,7 +96,7 @@ function SessionMenu() {
         }}
       />
       <ItemSheet item={selected} open={selected !== null} onClose={() => setSelected(null)} onAskStaff={askStaff} />
-      <CartBar />
+      <CartBar onSelectItem={setSelected} />
     </>
   );
 }

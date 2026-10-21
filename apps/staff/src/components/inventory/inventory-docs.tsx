@@ -613,7 +613,7 @@ function StocktakeView({ id, onBack }: { id: string; onBack: () => void }) {
             </div>
             <Checkbox label="Hiện tồn lý thuyết" checked={showExpected} onChange={setShowExpected} />
           </div>
-          <div className="divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white">
+          <div className="divide-y divide-ink-100 overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06]">
             {lines.map((l) => {
               const v = counts[l.stockItemId] ?? '';
               const diff = v === '' ? null : Number(v) - l.expectedQty;
@@ -654,17 +654,17 @@ function StocktakeView({ id, onBack }: { id: string; onBack: () => void }) {
       ) : (
         <>
           <div className="grid grid-cols-3 gap-2">
-            <div className="rounded-2xl border border-ink-100 bg-white p-3">
+            <div className="rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06] p-3">
               <div className="text-xs text-ink-500 uppercase">Đã đếm</div>
               <div className="text-2xl font-black">
                 {d.countedLines}/{d.lines.length}
               </div>
             </div>
-            <div className="rounded-2xl border border-ink-100 bg-white p-3">
+            <div className="rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06] p-3">
               <div className="text-xs text-ink-500 uppercase">Dòng chênh lệch</div>
               <div className="text-2xl font-black">{varianceLines.length}</div>
             </div>
-            <div className="rounded-2xl border border-ink-100 bg-white p-3">
+            <div className="rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06] p-3">
               <div className="text-xs text-ink-500 uppercase">Giá trị chênh lệch</div>
               <div className={cn('text-2xl font-black tabular-nums', d.varianceValue < 0 ? 'text-red-700' : 'text-emerald-700')}>{money(d.varianceValue)}</div>
             </div>

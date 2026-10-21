@@ -76,9 +76,9 @@ export function ReportsAdmin() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-xl font-bold text-ink-900">Báo cáo</h1>
+        <h2 className="sr-only">Báo cáo</h2>
         <Segmented
-          className="ml-auto flex-wrap"
+          className="flex-wrap"
           value={tab}
           onChange={setTab}
           options={[

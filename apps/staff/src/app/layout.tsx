@@ -1,6 +1,15 @@
 import type { Metadata, Viewport } from 'next';
+import { Be_Vietnam_Pro } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+
+// Phông chữ thiết kế cho tiếng Việt: dấu rõ, dễ đọc trên tablet ở khoảng cách xa
+const beVietnam = Be_Vietnam_Pro({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-be-vietnam',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'DaLan OS – Nhân viên',
@@ -19,8 +28,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi">
-      <body className="min-h-full antialiased">
+    <html lang="vi" className={beVietnam.variable}>
+      <body className="min-h-full font-sans antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

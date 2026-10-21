@@ -30,8 +30,8 @@ export function StaffAdmin() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-xl font-bold text-ink-900">Nhân sự</h1>
-        {tabs.length > 1 && <Segmented className="ml-auto" value={tab} onChange={setTab} options={tabs} />}
+        <h2 className="sr-only">Nhân sự</h2>
+        {tabs.length > 1 && <Segmented value={tab} onChange={setTab} options={tabs} />}
       </div>
       {tab === 'staff' && <StaffPanel canManage={canManage} />}
       {tab === 'roles' && <RolesPanel canManage={canManage} />}

@@ -14,23 +14,25 @@ export interface ItemDialogProps {
   item: BranchMenuItemView | null;
   initial?: CartLine | null;
   defaultCourse?: number;
+  /** Ghế mặc định cho món mới (theo ghế đang chọn trên màn gọi món). */
+  defaultSeat?: number;
   onClose: () => void;
   onSubmit: (line: CartLine) => void;
 }
 
 /** Cấu hình một dòng món: biến thể, tùy chọn, số lượng hoặc trọng lượng, giá nhập, ghi chú, đợt. */
-export function ItemDialog({ item, initial, defaultCourse = 1, onClose, onSubmit }: ItemDialogProps) {
+export function ItemDialog({ item, initial, defaultCourse = 1, defaultSeat, onClose, onSubmit }: ItemDialogProps) {
   const [line, setLine] = useState<CartLine | null>(null);
   const [qtyText, setQtyText] = useState('1');
   const [priceText, setPriceText] = useState('');
 
   useEffect(() => {
     if (!item) return setLine(null);
-    const base = initial ?? defaultLineFor(item, defaultCourse);
+    const base = initial ?? { ...defaultLineFor(item, defaultCourse), seatNo: defaultSeat };
     setLine(base);
     setQtyText(String(base.quantity));
     setPriceText(base.enteredPrice ? String(base.enteredPrice) : '');
-  }, [item, initial, defaultCourse]);
+  }, [item, initial, defaultCourse, defaultSeat]);
 
   const errors = useMemo(() => {
     if (!item || !line) return [];

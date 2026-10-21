@@ -18,23 +18,65 @@
     "guests": "{count} guests",
     "noSession": "You have not joined a table yet. Scan the QR code on your table to start.",
     "sessionExpired": "This session has ended. Scan the QR code again to continue.",
-    "viewPublicMenu": "View menu"
+    "viewPublicMenu": "View menu",
+    "home": "Home",
+    "goHome": "Back to home",
+    "hotline": "Call restaurant",
+    "call": "Call",
+    "directions": "Directions",
+    "reserve": "Reserve",
+    "viewMenu": "View menu",
+    "continue": "Continue",
+    "liveTracking": "Live updates"
   },
   "nav": {
     "menu": "Menu",
-    "orders": "Ordered",
+    "orders": "My orders",
     "bill": "Bill",
     "call": "Call staff",
-    "account": "Account"
+    "account": "Account",
+    "home": "Home",
+    "reserve": "Reserve",
+    "feedback": "Rate your meal",
+    "more": "More",
+    "label": "Main navigation",
+    "atTable": "You are seated at",
+    "tablePin": "Table code for friends: {pin}",
+    "yourTable": "At your table",
+    "explore": "Explore Dạ Lan"
   },
   "home": {
     "title": "Da Lan Restaurant",
-    "intro": "Three venues in Thanh Hoa city: regional cuisine, weddings and events.",
+    "intro": "Three venues in Thanh Hóa city: regional specialties, private rooms, weddings and events.",
     "branches": "Venues",
     "capacity": "Capacity {count} guests",
     "reserve": "Reserve a table",
     "scanHint": "At the restaurant? Scan the QR code on your table to order.",
-    "account": "Da Lan membership"
+    "account": "Da Lan membership",
+    "heroLine1": "The finest flavours",
+    "heroLine2": "of Thanh Hóa",
+    "statBranches": "Venues",
+    "statGuests": "Guests / event",
+    "statArea": "Event hall",
+    "quickActions": "Shortcuts",
+    "atTable": "You are seated at",
+    "continueOrder": "Order",
+    "qaOrder": "Order at table",
+    "qaOrderHint": "Scan the table QR code",
+    "qaReserveHint": "Pick date, time, party size",
+    "qaMenu": "View menu",
+    "qaMenuHint": "Nearly 300 local dishes",
+    "qaMemberHint": "Earn points, get rewards",
+    "qrTitle": "Order at your table",
+    "qrStep1": "Take your seat and find the QR code on the table or menu stand.",
+    "qrStep2": "Open your phone camera and point it at the QR code.",
+    "qrStep3": "Tap the link that appears to join your table and start ordering.",
+    "qrCameraHint": "No app needed — just use your phone's built-in camera.",
+    "branchesEyebrow": "Our restaurants",
+    "eventEyebrow": "Weddings · Conferences · Birthdays",
+    "eventTitle": "Host your event at Dạ Lan Event",
+    "eventBody": "An 11,000 m² venue for up to 1,100 guests. All-inclusive banquet menus, decoration, sound and lighting.",
+    "footer": "Dạ Lan Restaurant · Thanh Hóa City"
   },
   "landing": {
     "welcome": "Welcome to {branch}",
@@ -50,7 +92,14 @@
     "notFound": "This QR code is invalid or the table is not in service.",
     "invalidPin": "Wrong table code",
     "joinPinShare": "Table code for your friends: {pin}",
-    "joining": "Joining..."
+    "joining": "Joining...",
+    "checkIn": "Table check-in",
+    "seats": "{count} seats",
+    "notFoundBody": "Try scanning the code again or ask our staff for help. You can still browse the menu.",
+    "featureOrder": "Order from your phone",
+    "featureTrack": "Track dishes being cooked",
+    "featureCall": "Call staff in one tap",
+    "featurePay": "View the bill, pay by VietQR"
   },
   "menu": {
     "title": "Menu",
@@ -61,7 +110,8 @@
       "vegetarian": "Vegetarian",
       "signature": "Signature",
       "seafood": "Seafood",
-      "under100": "Under 100k"
+      "under100": "Under 100k",
+      "spicy": "Spicy"
     },
     "soldOut": "Sold out",
     "closedNow": "Not available now",
@@ -84,13 +134,39 @@
     "vegetarianTag": "Vegetarian",
     "spicyTag": "Spicy",
     "readOnly": "Reference menu. Prices include VAT and may vary by season.",
-    "publicNotFound": "Venue not found"
+    "publicNotFound": "Venue not found",
+    "marketShort": "Market price",
+    "from": "from",
+    "clearSearch": "Clear search",
+    "categories": "Categories",
+    "resultCount": "{count} matching dishes",
+    "signatureRail": "Signature dishes",
+    "resetFilters": "Clear filters and search",
+    "itemCount": "{count} dishes",
+    "opensAt": "Served {hours}",
+    "byWeight": "By weight",
+    "stockLeft": "Only {count} left",
+    "added": "Added {name} to cart",
+    "readOnlyTitle": "Reference menu",
+    "readOnlyHint": "Scan the table QR code to order directly.",
+    "reserveCta": "Reserve",
+    "chooseRequired": "Choose required options",
+    "add": "Add",
+    "allergens": "May contain: {list}",
+    "branches": "Venues",
+    "publicError": "Couldn't load the menu. Please try again or call {phone}.",
+    "quickNotes": {
+      "lessSpicy": "Less spicy",
+      "noOnion": "No onion",
+      "lessSalt": "Less salt",
+      "serveFirst": "Serve first"
+    }
   },
   "cart": {
     "title": "Table cart",
     "items": "{count} items",
     "empty": "Your cart is empty. Pick something from the menu.",
-    "submit": "Send order",
+    "submit": "Send to kitchen · {count} items",
     "submitting": "Sending...",
     "total": "Estimated total",
     "orderNote": "Note for this order",
@@ -98,10 +174,20 @@
     "sentConfirm": "Sent. Our staff will confirm in a moment.",
     "sentKitchen": "Sent to the kitchen. Your food is on its way.",
     "sentError": "Could not send the order",
-    "view": "View cart"
+    "view": "View cart",
+    "totalEstimated": "Estimate (weighed dishes priced on scale)",
+    "confirmTitle": "Send {count} items to the kitchen?",
+    "confirmBody": "The kitchen will start cooking right away. To change or cancel after sending, please call our staff.",
+    "review": "Review",
+    "confirmSend": "Send now",
+    "browse": "Browse menu",
+    "remove": "Remove item",
+    "quantity": "Quantity",
+    "upsell": "Goes well with",
+    "orderNotePlaceholder": "E.g. serve all together, kids at the table"
   },
   "orders": {
-    "title": "Ordered dishes",
+    "title": "My orders",
     "empty": "Nothing ordered yet",
     "order": "Round {seq}",
     "by": "Ordered by {name}",
@@ -117,11 +203,25 @@
       "SERVED": "Served",
       "VOIDED": "Cancelled",
       "CANCELLED": "Cancelled"
+    },
+    "addMore": "Order more",
+    "emptyBody": "Dishes you send to the kitchen appear here with live cooking progress.",
+    "startOrdering": "Start ordering",
+    "progress": "Serving progress",
+    "allServed": "Everything has been served. Enjoy your meal!",
+    "servedSummary": "dishes served",
+    "steps": {
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "cooking": "Cooking",
+      "served": "Served",
+      "waiting": "Awaiting confirmation",
+      "onTheWay": "On the way"
     }
   },
   "bill": {
     "title": "Bill",
-    "provisional": "Running total",
+    "provisional": "Provisional bill",
     "subtotal": "Items",
     "discount": "Discount",
     "serviceCharge": "Service charge ({pct}%)",
@@ -162,7 +262,18 @@
     "payments": "Payments",
     "thanks": "Thank you! See you again.",
     "rate": "Rate your meal",
-    "lookup": "Look up e-invoice"
+    "lookup": "Look up e-invoice",
+    "guests": "{count} guests",
+    "nothingYet": "Nothing has been charged yet",
+    "minSpend": "Minimum spend surcharge",
+    "requestedHint": "The cashier is preparing your bill. The VietQR code will appear here shortly.",
+    "methods": "Payment methods",
+    "card": "Card",
+    "cash": "Cash",
+    "payNow": "Pay",
+    "backToBill": "Back to bill",
+    "rounding": "Rounding",
+    "autoConfirm": "Payment is confirmed automatically once received"
   },
   "call": {
     "title": "Call staff",
@@ -176,7 +287,18 @@
     "pending": "Waiting",
     "acked": "Staff is coming",
     "done": "Done",
-    "recent": "Recent requests"
+    "recent": "Recent requests",
+    "eyebrow": "Table service",
+    "subtitle": "One tap and the nearest staff member will come right over.",
+    "sendRequest": "Send request",
+    "notePlaceholder": "What do you need? E.g. 2 more bowls, a high chair",
+    "suggest": {
+      "babyChair": "High chair",
+      "wetTowel": "Wet towels",
+      "sauce": "More dipping sauce",
+      "toothpick": "Toothpicks",
+      "takeaway": "Takeaway box"
+    }
   },
   "feedback": {
     "title": "How was your meal?",
@@ -186,7 +308,17 @@
     "liked": "Dishes you liked",
     "submit": "Send feedback",
     "thanks": "Thank you for sharing!",
-    "savedLocal": "Your feedback has been recorded."
+    "savedLocal": "Your feedback has been recorded.",
+    "eyebrow": "Thank you",
+    "scale": {
+      "1": "Very dissatisfied",
+      "2": "Not satisfied",
+      "3": "Okay",
+      "4": "Satisfied",
+      "5": "Excellent!"
+    },
+    "backToMenu": "Back to menu",
+    "home": "Home"
   },
   "account": {
     "title": "Da Lan membership",
@@ -201,11 +333,27 @@
     "welcome": "Hello {name}",
     "points": "Points",
     "tier": "Tier",
-    "history": "History",
+    "history": "Dining history",
     "comingSoon": "Coming soon",
     "logout": "Sign out",
     "invalidPhone": "Invalid phone number",
-    "invalidOtp": "Wrong or expired OTP"
+    "invalidOtp": "Wrong or expired OTP",
+    "memberEyebrow": "Dạ Lan Rewards",
+    "memberCard": "Member card",
+    "tierDefault": "Member",
+    "visits": "Visits",
+    "lifetime": "Lifetime spend",
+    "vouchers": "My rewards",
+    "validTo": "Valid until {date}",
+    "noVouchers": "No rewards yet. Earn points to unlock gifts!",
+    "noHistory": "No visits yet.",
+    "changePhone": "Change number",
+    "resend": "Resend code",
+    "privacy": "Your phone number is only used for points and booking confirmations.",
+    "perkPoints": "Earn points every meal",
+    "perkBirthday": "Birthday gift",
+    "perkFast": "Faster booking",
+    "perkHistory": "Bill history"
   },
   "reserve": {
     "title": "Reserve a table",
@@ -224,10 +372,65 @@
     "submit": "Send reservation request",
     "success": "Request received. The restaurant will confirm via Zalo or phone.",
     "unavailable": "Online reservations are coming soon. Please call {phone} to book.",
-    "callNow": "Call now"
+    "callNow": "Call now",
+    "stepOf": "Step {step}/{total}",
+    "steps": {
+      "branch": "Which venue would you like to visit?",
+      "datetime": "Choose date and time",
+      "party": "Guests and seating",
+      "contact": "Contact details",
+      "review": "Review and confirm"
+    },
+    "successTitle": "Request sent!",
+    "guestsCount": "{count} guests",
+    "largeParty": "Party of 30 or more? Call us for banquet halls and menus:",
+    "invalidPhone": "Invalid phone number",
+    "phoneHint": "We'll call or message you on Zalo to confirm",
+    "tags": {
+      "birthday": "Birthday",
+      "anniversary": "Anniversary",
+      "business": "Business meal",
+      "babyChair": "High chair"
+    },
+    "policy": "Your booking is confirmed once the restaurant calls or messages you on Zalo.",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "monthShort": "M",
+    "otherDate": "Pick another date",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "otherTime": "Other time",
+    "when": "When",
+    "contact": "Contact",
+    "edit": "Edit",
+    "otherCount": "Other party size"
   },
   "offline": {
     "title": "You are offline",
     "body": "Please check your wifi or mobile data. Your cart is saved."
+  },
+  "gate": {
+    "title": "Scan the QR code to order",
+    "body": "This feature is for guests dining in. Scan the QR code on your table to order, track dishes and pay right from your phone.",
+    "expiredTitle": "Your ordering session has ended",
+    "expiredBody": "Thank you! Scan the table QR code again if you'd like to keep ordering.",
+    "step1": "Open your phone camera",
+    "step2": "Point it at the QR code on the table",
+    "step3": "Tap the link to join your table",
+    "viewMenu": "View menu",
+    "reserve": "Reserve",
+    "home": "Home"
+  },
+  "branchPicker": {
+    "eyebrow": "Menu",
+    "title": "Choose a venue",
+    "subtitle": "Each venue has its own menu and prices. We'll remember your choice.",
+    "scanHint": "Dining in now? Scan the QR code on your table to order directly — no need to wait for staff."
+  },
+  "errors": {
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The link may have changed or no longer exists. Please head back to the home page.",
+    "errorTitle": "Something went wrong",
+    "errorBody": "Sorry, this page failed to load. Please try again — your cart is safe."
   }
 }

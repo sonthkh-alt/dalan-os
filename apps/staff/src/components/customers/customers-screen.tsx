@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, GitMerge, Plus, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, GitMerge, Plus, Search, UserSearch, X } from 'lucide-react';
 import { TIER_LABELS } from '@dalan/contracts';
 import { useCan } from '@/lib/auth-store';
 import { useCustomers, useTiers } from '@/lib/queries-ops';
@@ -102,9 +102,35 @@ export function CustomersScreen() {
           {res.isLoading ? (
             <Loading />
           ) : (res.data?.items.length ?? 0) === 0 ? (
-            <EmptyState title="Không tìm thấy khách" hint="Thử tìm bằng 4 số cuối điện thoại hoặc tên không dấu." />
+            <EmptyState
+              icon={UserSearch}
+              title={q || tierId || tag ? 'Không tìm thấy khách' : 'Chưa có hồ sơ khách'}
+              hint={q || tierId || tag ? 'Thử tìm bằng 4 số cuối điện thoại hoặc tên không dấu.' : 'Hồ sơ được tạo khi khách đặt bàn, gắn vào bàn hoặc khi bạn thêm thủ công.'}
+              action={
+                <>
+                  {(q || tierId || tag) && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setQ('');
+                        setTierId('');
+                        setTag('');
+                        setPage(1);
+                      }}
+                    >
+                      <X className="h-5 w-5" /> Xóa bộ lọc
+                    </Button>
+                  )}
+                  {canManage && (
+                    <Button onClick={() => setCreateOpen(true)}>
+                      <Plus className="h-5 w-5" /> Thêm khách
+                    </Button>
+                  )}
+                </>
+              }
+            />
           ) : (
-            <div className="divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white">
+            <div className="divide-y divide-ink-100 overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06]">
               {res.data!.items.map((c) => (
                 <Link key={c.id} href={`/customers/${c.id}`} className="flex items-center gap-3 px-3 py-3 hover:bg-paper">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-100 font-bold text-brand-800">{(c.fullName ?? '?').trim().split(/\s+/).pop()?.[0]?.toUpperCase() ?? '?'}</span>

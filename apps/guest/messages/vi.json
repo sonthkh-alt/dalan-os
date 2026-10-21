@@ -18,23 +18,65 @@
     "guests": "{count} khách",
     "noSession": "Bạn chưa vào bàn. Hãy quét mã QR trên bàn để bắt đầu.",
     "sessionExpired": "Phiên đã kết thúc. Quét lại mã QR để tiếp tục.",
-    "viewPublicMenu": "Xem thực đơn"
+    "viewPublicMenu": "Xem thực đơn",
+    "home": "Trang chủ",
+    "goHome": "Về trang chủ",
+    "hotline": "Gọi nhà hàng",
+    "call": "Gọi điện",
+    "directions": "Chỉ đường",
+    "reserve": "Đặt bàn",
+    "viewMenu": "Xem thực đơn",
+    "continue": "Tiếp tục",
+    "liveTracking": "Cập nhật trực tiếp"
   },
   "nav": {
     "menu": "Thực đơn",
-    "orders": "Đã gọi",
+    "orders": "Đơn của tôi",
     "bill": "Hóa đơn",
     "call": "Gọi phục vụ",
-    "account": "Tài khoản"
+    "account": "Tài khoản",
+    "home": "Trang chủ",
+    "reserve": "Đặt bàn",
+    "feedback": "Đánh giá bữa ăn",
+    "more": "Danh mục",
+    "label": "Điều hướng chính",
+    "atTable": "Bạn đang ngồi tại",
+    "tablePin": "Mã bàn cho bạn bè: {pin}",
+    "yourTable": "Tại bàn",
+    "explore": "Khám phá Dạ Lan"
   },
   "home": {
     "title": "Nhà hàng Dạ Lan",
-    "intro": "Ba cơ sở tại thành phố Thanh Hóa: ẩm thực xứ Thanh, tiệc cưới và sự kiện.",
+    "intro": "Ba cơ sở tại thành phố Thanh Hóa: đặc sản xứ Thanh, phòng VIP, tiệc cưới và sự kiện.",
     "branches": "Cơ sở",
     "capacity": "Sức chứa {count} khách",
     "reserve": "Đặt bàn",
     "scanHint": "Đang ở nhà hàng? Quét mã QR trên bàn để gọi món.",
-    "account": "Thành viên Dạ Lan"
+    "account": "Thành viên Dạ Lan",
+    "heroLine1": "Tinh hoa ẩm thực",
+    "heroLine2": "xứ Thanh",
+    "statBranches": "Cơ sở",
+    "statGuests": "Khách / tiệc",
+    "statArea": "Sảnh sự kiện",
+    "quickActions": "Lối tắt",
+    "atTable": "Bạn đang ngồi tại bàn",
+    "continueOrder": "Gọi món",
+    "qaOrder": "Gọi món tại bàn",
+    "qaOrderHint": "Quét mã QR trên bàn",
+    "qaReserveHint": "Chọn ngày, giờ, số khách",
+    "qaMenu": "Xem thực đơn",
+    "qaMenuHint": "Gần 300 món xứ Thanh",
+    "qaMemberHint": "Tích điểm, nhận ưu đãi",
+    "qrTitle": "Gọi món tại bàn",
+    "qrStep1": "Ngồi vào bàn và tìm mã QR dán trên bàn hoặc kệ menu.",
+    "qrStep2": "Mở camera điện thoại, hướng vào mã QR.",
+    "qrStep3": "Chạm vào đường link hiện ra để vào bàn và bắt đầu gọi món.",
+    "qrCameraHint": "Không cần cài ứng dụng — dùng camera có sẵn của điện thoại.",
+    "branchesEyebrow": "Hệ thống nhà hàng",
+    "eventEyebrow": "Tiệc cưới · Hội nghị · Sinh nhật",
+    "eventTitle": "Đặt tiệc tại Dạ Lan Event",
+    "eventBody": "Sảnh 11.000 m², phục vụ tới 1.100 khách. Thực đơn tiệc trọn gói, trang trí và âm thanh ánh sáng.",
+    "footer": "Nhà hàng Dạ Lan · TP. Thanh Hóa"
   },
   "landing": {
     "welcome": "Chào mừng đến {branch}",
@@ -50,7 +92,14 @@
     "notFound": "Mã QR không hợp lệ hoặc bàn đã ngừng phục vụ.",
     "invalidPin": "Mã bàn không đúng",
     "joinPinShare": "Mã bàn để bạn bè cùng gọi món: {pin}",
-    "joining": "Đang vào bàn..."
+    "joining": "Đang vào bàn...",
+    "checkIn": "Vào bàn",
+    "seats": "{count} chỗ",
+    "notFoundBody": "Hãy thử quét lại mã, hoặc nhờ nhân viên hỗ trợ. Bạn vẫn có thể xem thực đơn.",
+    "featureOrder": "Gọi món ngay trên điện thoại",
+    "featureTrack": "Theo dõi món đang nấu",
+    "featureCall": "Gọi phục vụ một chạm",
+    "featurePay": "Xem hóa đơn, thanh toán VietQR"
   },
   "menu": {
     "title": "Thực đơn",
@@ -59,9 +108,10 @@
     "filters": {
       "all": "Tất cả",
       "vegetarian": "Chay",
-      "signature": "Đặc sản",
+      "signature": "Đặc trưng",
       "seafood": "Hải sản",
-      "under100": "Dưới 100k"
+      "under100": "Dưới 100k",
+      "spicy": "Cay"
     },
     "soldOut": "Hết món",
     "closedNow": "Ngoài giờ bán",
@@ -80,17 +130,43 @@
     "notePlaceholder": "Ví dụ: ít cay, không hành",
     "addToCart": "Thêm vào giỏ · {price}",
     "estimated": "Tạm tính",
-    "signatureTag": "Đặc sản",
+    "signatureTag": "Đặc trưng",
     "vegetarianTag": "Chay",
     "spicyTag": "Cay",
     "readOnly": "Thực đơn tham khảo. Giá đã gồm VAT, có thể thay đổi theo mùa.",
-    "publicNotFound": "Không tìm thấy cơ sở"
+    "publicNotFound": "Không tìm thấy cơ sở",
+    "marketShort": "Giá thời điểm",
+    "from": "từ",
+    "clearSearch": "Xóa tìm kiếm",
+    "categories": "Nhóm món",
+    "resultCount": "{count} món phù hợp",
+    "signatureRail": "Món đặc trưng",
+    "resetFilters": "Bỏ lọc và tìm kiếm",
+    "itemCount": "{count} món",
+    "opensAt": "Bán {hours}",
+    "byWeight": "Theo cân",
+    "stockLeft": "Chỉ còn {count}",
+    "added": "Đã thêm {name} vào giỏ",
+    "readOnlyTitle": "Thực đơn tham khảo",
+    "readOnlyHint": "Quét mã QR tại bàn để gọi món trực tiếp.",
+    "reserveCta": "Đặt bàn",
+    "chooseRequired": "Chọn mục bắt buộc",
+    "add": "Thêm món",
+    "allergens": "Có thể chứa: {list}",
+    "branches": "Cơ sở",
+    "publicError": "Không tải được thực đơn. Vui lòng thử lại hoặc gọi {phone}.",
+    "quickNotes": {
+      "lessSpicy": "Ít cay",
+      "noOnion": "Không hành",
+      "lessSalt": "Ít mặn",
+      "serveFirst": "Lên trước"
+    }
   },
   "cart": {
     "title": "Giỏ của bàn",
     "items": "{count} món",
     "empty": "Giỏ trống. Chọn món từ thực đơn.",
-    "submit": "Gửi đơn",
+    "submit": "Gửi bếp · {count} món",
     "submitting": "Đang gửi...",
     "total": "Tạm tính",
     "orderNote": "Ghi chú chung cho đơn",
@@ -98,10 +174,20 @@
     "sentConfirm": "Đã gửi, nhân viên sẽ xác nhận trong giây lát",
     "sentKitchen": "Đã gửi bếp. Món sẽ lên trong ít phút.",
     "sentError": "Không gửi được đơn",
-    "view": "Xem giỏ"
+    "view": "Xem giỏ",
+    "totalEstimated": "Tạm tính (món cân theo thực tế)",
+    "confirmTitle": "Gửi {count} món tới bếp?",
+    "confirmBody": "Bếp sẽ bắt đầu chế biến ngay. Muốn đổi hoặc hủy món sau khi gửi, vui lòng gọi nhân viên.",
+    "review": "Xem lại",
+    "confirmSend": "Gửi ngay",
+    "browse": "Xem thực đơn",
+    "remove": "Xóa món",
+    "quantity": "Số lượng",
+    "upsell": "Thường gọi kèm",
+    "orderNotePlaceholder": "Ví dụ: lên món cùng lúc, có trẻ nhỏ"
   },
   "orders": {
-    "title": "Món đã gọi",
+    "title": "Đơn của tôi",
     "empty": "Chưa có món nào được gọi",
     "order": "Đợt {seq}",
     "by": "{name} gọi",
@@ -117,11 +203,25 @@
       "SERVED": "Đã ra bàn",
       "VOIDED": "Đã hủy",
       "CANCELLED": "Đã hủy"
+    },
+    "addMore": "Gọi thêm",
+    "emptyBody": "Món bạn gửi bếp sẽ hiện ở đây cùng tiến độ chế biến theo thời gian thực.",
+    "startOrdering": "Bắt đầu gọi món",
+    "progress": "Tiến độ lên món",
+    "allServed": "Tất cả món đã lên. Chúc quý khách ngon miệng!",
+    "servedSummary": "món đã lên bàn",
+    "steps": {
+      "sent": "Đã gửi",
+      "accepted": "Bếp nhận",
+      "cooking": "Đang nấu",
+      "served": "Đã lên món",
+      "waiting": "Chờ xác nhận",
+      "onTheWay": "Đang mang ra"
     }
   },
   "bill": {
     "title": "Hóa đơn",
-    "provisional": "Tạm tính",
+    "provisional": "Hóa đơn tạm tính",
     "subtotal": "Tổng món",
     "discount": "Giảm giá",
     "serviceCharge": "Phí phục vụ ({pct}%)",
@@ -162,7 +262,18 @@
     "payments": "Thanh toán",
     "thanks": "Cảm ơn quý khách! Hẹn gặp lại.",
     "rate": "Đánh giá bữa ăn",
-    "lookup": "Tra cứu hóa đơn điện tử"
+    "lookup": "Tra cứu hóa đơn điện tử",
+    "guests": "{count} khách",
+    "nothingYet": "Chưa có món nào được tính tiền",
+    "minSpend": "Phụ thu chi tiêu tối thiểu",
+    "requestedHint": "Thu ngân đang chuẩn bị hóa đơn. Mã VietQR sẽ hiện ở đây trong giây lát.",
+    "methods": "Phương thức thanh toán",
+    "card": "Thẻ",
+    "cash": "Tiền mặt",
+    "payNow": "Thanh toán",
+    "backToBill": "Về hóa đơn",
+    "rounding": "Làm tròn",
+    "autoConfirm": "Hệ thống tự xác nhận khi nhận được tiền"
   },
   "call": {
     "title": "Gọi phục vụ",
@@ -176,7 +287,18 @@
     "pending": "Đang chờ",
     "acked": "Nhân viên đang tới",
     "done": "Đã xử lý",
-    "recent": "Yêu cầu gần đây"
+    "recent": "Yêu cầu gần đây",
+    "eyebrow": "Phục vụ tại bàn",
+    "subtitle": "Chạm một lần, nhân viên gần nhất sẽ tới ngay.",
+    "sendRequest": "Gửi yêu cầu",
+    "notePlaceholder": "Bạn cần gì? Ví dụ: thêm 2 bát, 1 ghế trẻ em",
+    "suggest": {
+      "babyChair": "Ghế trẻ em",
+      "wetTowel": "Khăn ướt",
+      "sauce": "Thêm nước chấm",
+      "toothpick": "Tăm",
+      "takeaway": "Hộp mang về"
+    }
   },
   "feedback": {
     "title": "Bữa ăn hôm nay thế nào?",
@@ -186,7 +308,17 @@
     "liked": "Món bạn thích",
     "submit": "Gửi đánh giá",
     "thanks": "Cảm ơn bạn đã chia sẻ!",
-    "savedLocal": "Đánh giá đã được ghi nhận."
+    "savedLocal": "Đánh giá đã được ghi nhận.",
+    "eyebrow": "Cảm ơn quý khách",
+    "scale": {
+      "1": "Rất không hài lòng",
+      "2": "Chưa hài lòng",
+      "3": "Bình thường",
+      "4": "Hài lòng",
+      "5": "Tuyệt vời!"
+    },
+    "backToMenu": "Về thực đơn",
+    "home": "Trang chủ"
   },
   "account": {
     "title": "Thành viên Dạ Lan",
@@ -201,11 +333,27 @@
     "welcome": "Xin chào {name}",
     "points": "Điểm hiện có",
     "tier": "Hạng",
-    "history": "Lịch sử",
+    "history": "Lịch sử dùng bữa",
     "comingSoon": "Tính năng đang hoàn thiện",
     "logout": "Đăng xuất",
     "invalidPhone": "Số điện thoại không hợp lệ",
-    "invalidOtp": "Mã OTP không đúng hoặc đã hết hạn"
+    "invalidOtp": "Mã OTP không đúng hoặc đã hết hạn",
+    "memberEyebrow": "Dạ Lan Rewards",
+    "memberCard": "Thẻ thành viên",
+    "tierDefault": "Thành viên",
+    "visits": "Lượt ghé thăm",
+    "lifetime": "Tổng chi tiêu",
+    "vouchers": "Ưu đãi của tôi",
+    "validTo": "HSD {date}",
+    "noVouchers": "Bạn chưa có ưu đãi nào. Tích điểm để nhận quà nhé!",
+    "noHistory": "Chưa có lượt dùng bữa nào.",
+    "changePhone": "Đổi số",
+    "resend": "Gửi lại mã",
+    "privacy": "Số điện thoại chỉ dùng để tích điểm và xác nhận đặt bàn.",
+    "perkPoints": "Tích điểm mỗi bữa",
+    "perkBirthday": "Quà sinh nhật",
+    "perkFast": "Đặt bàn nhanh",
+    "perkHistory": "Lưu lịch sử hóa đơn"
   },
   "reserve": {
     "title": "Đặt bàn",
@@ -224,10 +372,65 @@
     "submit": "Gửi yêu cầu đặt bàn",
     "success": "Đã nhận yêu cầu. Nhà hàng sẽ xác nhận qua Zalo hoặc điện thoại.",
     "unavailable": "Đặt bàn online đang được hoàn thiện. Vui lòng gọi {phone} để đặt bàn.",
-    "callNow": "Gọi ngay"
+    "callNow": "Gọi ngay",
+    "stepOf": "Bước {step}/{total}",
+    "steps": {
+      "branch": "Bạn muốn đến cơ sở nào?",
+      "datetime": "Chọn ngày và giờ",
+      "party": "Số khách và chỗ ngồi",
+      "contact": "Thông tin liên hệ",
+      "review": "Kiểm tra và xác nhận"
+    },
+    "successTitle": "Đã gửi yêu cầu!",
+    "guestsCount": "{count} khách",
+    "largeParty": "Tiệc từ 30 khách? Gọi để được tư vấn sảnh và thực đơn tiệc:",
+    "invalidPhone": "Số điện thoại không hợp lệ",
+    "phoneHint": "Nhà hàng sẽ gọi hoặc nhắn Zalo để xác nhận",
+    "tags": {
+      "birthday": "Sinh nhật",
+      "anniversary": "Kỷ niệm",
+      "business": "Tiếp khách",
+      "babyChair": "Ghế trẻ em"
+    },
+    "policy": "Đặt bàn được xác nhận khi nhà hàng gọi điện hoặc nhắn Zalo cho bạn.",
+    "today": "Hôm nay",
+    "tomorrow": "Ngày mai",
+    "monthShort": "Th",
+    "otherDate": "Chọn ngày khác",
+    "lunch": "Bữa trưa",
+    "dinner": "Bữa tối",
+    "otherTime": "Giờ khác",
+    "when": "Thời gian",
+    "contact": "Liên hệ",
+    "edit": "Sửa",
+    "otherCount": "Số khách khác"
   },
   "offline": {
     "title": "Mất kết nối",
     "body": "Vui lòng kiểm tra wifi hoặc 4G. Giỏ hàng của bạn vẫn được lưu."
+  },
+  "gate": {
+    "title": "Quét mã QR để gọi món",
+    "body": "Tính năng này dành cho khách đang ngồi tại nhà hàng. Hãy quét mã QR trên bàn để gọi món, theo dõi đơn và thanh toán ngay trên điện thoại.",
+    "expiredTitle": "Phiên gọi món đã kết thúc",
+    "expiredBody": "Cảm ơn quý khách! Quét lại mã QR trên bàn nếu bạn muốn tiếp tục gọi món.",
+    "step1": "Mở camera điện thoại",
+    "step2": "Hướng vào mã QR trên bàn",
+    "step3": "Chạm vào đường link để vào bàn",
+    "viewMenu": "Xem thực đơn",
+    "reserve": "Đặt bàn",
+    "home": "Trang chủ"
+  },
+  "branchPicker": {
+    "eyebrow": "Thực đơn",
+    "title": "Chọn cơ sở",
+    "subtitle": "Mỗi cơ sở có thực đơn và giá riêng. Chúng tôi sẽ nhớ lựa chọn của bạn.",
+    "scanHint": "Đang ngồi tại nhà hàng? Quét mã QR trên bàn để gọi món trực tiếp, không cần chờ nhân viên."
+  },
+  "errors": {
+    "notFoundTitle": "Không tìm thấy trang",
+    "notFoundBody": "Đường dẫn có thể đã thay đổi hoặc không còn tồn tại. Mời quý khách quay lại trang chủ.",
+    "errorTitle": "Đã có sự cố",
+    "errorBody": "Rất tiếc, trang gặp lỗi khi hiển thị. Vui lòng thử lại — giỏ hàng của bạn vẫn được giữ nguyên."
   }
 }

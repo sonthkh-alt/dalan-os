@@ -1,8 +1,11 @@
 @import 'tailwindcss';
 
-@theme {
-  --font-sans: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+/* Phông Be Vietnam Pro nạp bằng next/font (biến --font-be-vietnam gắn trên <html>) */
+@theme inline {
+  --font-sans: var(--font-be-vietnam), 'Segoe UI', system-ui, sans-serif;
+}
 
+@theme {
   /* Màu thương hiệu Dạ Lan: đỏ đô dịu, vàng nhẹ */
   --color-brand-50: #fdf3f4;
   --color-brand-100: #fbe3e5;
@@ -14,8 +17,11 @@
   --color-brand-700: #7f2233;
   --color-brand-800: #661d2b;
   --color-brand-900: #4d1620;
+  --color-brand-950: #2e0c13;
 
+  --color-gold-50: #fdf9ee;
   --color-gold-100: #fbf1d8;
+  --color-gold-200: #f6e2b0;
   --color-gold-300: #efd38f;
   --color-gold-500: #d9a441;
   --color-gold-700: #a8762a;
@@ -24,8 +30,15 @@
   --color-ink-700: #3f3638;
   --color-ink-500: #6f6467;
   --color-ink-300: #b7adaf;
+  --color-ink-200: #d8d0d1;
   --color-ink-100: #ece6e7;
+  --color-ink-50: #f6f2f2;
   --color-paper: #faf7f5;
+
+  /* Nền ứng dụng (ấm, trung tính) và bề mặt thẻ */
+  --color-canvas: #f4f1ee;
+  --color-surface: #ffffff;
+  --color-line: #e9e3e1;
 
   --color-status-empty: #e8e4e2;
   --color-status-pending: #fde68a;
@@ -34,6 +47,54 @@
   --color-status-ready: #86efac;
   --color-status-bill: #c4b5fd;
   --color-status-paid: #d1fae5;
+
+  /* Bóng nhiều lớp, mềm */
+  --shadow-card: 0 1px 2px rgb(31 27 28 / 0.04), 0 1px 3px rgb(31 27 28 / 0.06);
+  --shadow-raised: 0 2px 4px -1px rgb(31 27 28 / 0.06), 0 10px 24px -6px rgb(31 27 28 / 0.12);
+  --shadow-overlay: 0 24px 56px -12px rgb(31 27 28 / 0.3), 0 8px 20px -8px rgb(31 27 28 / 0.14);
+  --shadow-brand: 0 1px 2px rgb(77 22 32 / 0.3), 0 4px 12px -2px rgb(127 34 51 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.14);
+
+  --animate-fade-in: fade-in 0.16s ease-out;
+  --animate-dialog-in: dialog-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-sheet-in: sheet-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-pop-in: pop-in 0.14s ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 }
 
 :root {
@@ -43,16 +104,23 @@
 html,
 body {
   height: 100%;
-  background: var(--color-paper);
+  background: var(--color-canvas);
   color: var(--color-ink-900);
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-be-vietnam), 'Segoe UI', system-ui, sans-serif;
   font-size: 16px;
-  line-height: 1.4;
+  line-height: 1.45;
+  font-feature-settings: 'ss01', 'cv11';
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-brand-200);
+  color: var(--color-brand-950);
 }
 
 * {
@@ -63,6 +131,25 @@ button,
 [role='button'] {
   cursor: pointer;
   user-select: none;
+}
+
+/* Viền tập trung rõ ràng khi dùng bàn phím (ô nhập có vòng sáng riêng) */
+@layer base {
+  :where(a, button, [role='button'], [role='tab'], [role='option'], [tabindex], summary):focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+}
+
+/* Mũi tên cho ô chọn (appearance: none) — đặt trên chính select để luôn bám mép phải */
+@layer components {
+  .select-chevron {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f6467' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.15rem;
+  }
 }
 
 /* Thanh cuộn mảnh trên màn cảm ứng */
@@ -100,17 +187,29 @@ button,
 @keyframes toast-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(-8px) scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 .animate-toast-in {
-  animation: toast-in 0.18s ease-out;
+  animation: toast-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Tôn trọng thiết lập giảm chuyển động của hệ điều hành */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

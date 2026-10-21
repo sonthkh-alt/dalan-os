@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { ArrowLeft, Coins, GitMerge, Link2, Pencil, Ticket } from 'lucide-react';
+import { Coins, GitMerge, Link2, Pencil, Ticket, UserX } from 'lucide-react';
+import { PageHeader } from '@/components/ui/page-header';
 import { RESERVATION_STATUS_LABELS } from '@dalan/contracts';
 import { errorMessage } from '@/lib/api';
 import { useAuth, useCan } from '@/lib/auth-store';
@@ -38,28 +39,46 @@ export function CustomerDetailScreen({ customerId }: { customerId: string }) {
   const branchName = (id: string) => branches.find((b) => b.id === id)?.name ?? '';
 
   if (c.isLoading) return <Loading />;
-  if (!c.data) return <div className="p-4 text-red-700">{errorMessage(c.error)}</div>;
+  if (!c.data)
+    return (
+      <div className="flex min-h-full flex-col">
+        <PageHeader back="/customers" breadcrumb={[{ label: 'Khách hàng', href: '/customers' }]} title="Hồ sơ khách" className="border-b border-ink-100 bg-white" />
+        <EmptyState
+          icon={UserX}
+          title="Không mở được hồ sơ khách"
+          hint={errorMessage(c.error)}
+          action={
+            <Link href="/customers" className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-700 px-4 font-semibold text-white shadow-brand hover:bg-brand-800">
+              Về danh sách khách
+            </Link>
+          }
+        />
+      </div>
+    );
   const d = c.data;
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="flex flex-wrap items-center gap-2 border-b border-ink-100 bg-white px-2 py-2">
-        <Link href="/customers" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-ink-100" aria-label="Quay lại">
-          <ArrowLeft className="h-6 w-6" />
-        </Link>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="truncate text-xl font-bold">{d.fullName ?? 'Chưa có tên'}</h1>
+      <PageHeader
+        back="/customers"
+        breadcrumb={[{ label: 'Khách hàng', href: '/customers' }, { label: 'Hồ sơ khách' }]}
+        className="border-b border-ink-100 bg-white"
+        title={
+          <span className="flex min-w-0 items-center gap-2">
+            <span className="truncate">{d.fullName ?? 'Chưa có tên'}</span>
             {d.tier && <Badge tone="brand">{d.tier.name}</Badge>}
             {d.isAnonymized && <Badge tone="danger">Đã ẩn danh</Badge>}
-          </div>
-          <div className="text-sm text-ink-500">
+          </span>
+        }
+        subtitle={
+          <>
             {phoneDisplay(d.phone)}
             {d.phoneMasked && ' (đã che)'}
             {d.email ? ` · ${d.email}` : ''}
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
+          </>
+        }
+        actions={
+          <>
           {canAttach && (
             <Button variant="outline" onClick={() => setDialog('attach')}>
               <Link2 className="h-5 w-5" /> Gắn vào bàn
@@ -81,8 +100,9 @@ export function CustomerDetailScreen({ customerId }: { customerId: string }) {
               </Button>
             </>
           )}
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <div className="space-y-3 p-3 md:p-4">
         <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
@@ -141,7 +161,7 @@ export function CustomerDetailScreen({ customerId }: { customerId: string }) {
           </Card>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-ink-100 bg-white">
+        <div className="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06]">
           <TabBar
             value={tab}
             onChange={setTab}

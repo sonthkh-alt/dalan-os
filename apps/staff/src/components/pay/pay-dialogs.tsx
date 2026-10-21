@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { splitEqual } from '@dalan/domain';
-import type { BillDetail, Payment, SessionDetail } from '@/lib/types';
+import type { BillDetail, SessionDetail } from '@/lib/types';
 import { cn, money, moneyPlain, qty } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -125,108 +125,6 @@ export function DiscountDialog({ open, bill, onClose, onSubmit, loading }: { ope
           {bill.customer ? <p>Khách <b>{bill.customer.fullName ?? bill.customer.phone}</b> có <b>{bill.customer.pointsBalance}</b> điểm. Hệ thống sẽ dùng tối đa theo chính sách.</p> : <p className="text-amber-700">Chưa gắn khách thành viên vào bill này.</p>}
         </div>
       )}
-    </Dialog>
-  );
-}
-
-export function CashDialog({ open, due, onClose, onSubmit, loading }: { open: boolean; due: number; onClose: () => void; onSubmit: (amount: number, tendered: number) => void; loading?: boolean }) {
-  const [tendered, setTendered] = useState('');
-  useEffect(() => {
-    if (open) setTendered(String(due));
-  }, [open, due]);
-  const t = Number(tendered || 0);
-  const change = t - due;
-  const quick = useMemo(() => {
-    const denoms = [50_000, 100_000, 200_000, 500_000, 1_000_000, 2_000_000];
-    const opts = new Set<number>([due]);
-    for (const d of denoms) {
-      const up = Math.ceil(due / d) * d;
-      if (up > due) opts.add(up);
-      if (d > due) opts.add(d);
-    }
-    return [...opts].sort((a, b) => a - b).slice(0, 5).map((n) => ({ label: moneyPlain(n), value: String(n) }));
-  }, [due]);
-  return (
-    <Dialog open={open} onClose={onClose} title="Thu tiền mặt" size="sm" mode="center">
-      <div className="mb-2 flex justify-between text-sm"><span className="text-ink-500">Còn phải thu</span><b className="tabular-nums">{moneyPlain(due)}</b></div>
-      <div className="mb-1 text-xs text-ink-500">Khách đưa</div>
-      <div className="mb-2 rounded-xl bg-paper px-4 py-3 text-right text-3xl font-bold tabular-nums">{moneyPlain(t)}</div>
-      <div className={cn('mb-3 flex justify-between rounded-xl px-3 py-2 text-lg font-bold', change >= 0 ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700')}>
-        <span>{change >= 0 ? 'Tiền thừa' : 'Còn thiếu'}</span>
-        <span className="tabular-nums">{moneyPlain(Math.abs(change))}</span>
-      </div>
-      <NumberPad value={tendered} onChange={setTendered} quick={quick} onSubmit={() => t > 0 && !loading && onSubmit(Math.min(t, due), t)} submitLabel={loading ? 'Đang ghi nhận...' : change >= 0 ? 'Thu tiền' : 'Thu một phần'} />
-    </Dialog>
-  );
-}
-
-export function CardDialog({ open, due, onClose, onSubmit, loading }: { open: boolean; due: number; onClose: () => void; onSubmit: (body: Record<string, unknown>) => void; loading?: boolean }) {
-  const [sub, setSub] = useState<'CONTACTLESS' | 'APPLE_PAY' | 'GOOGLE_PAY' | 'CHIP'>('CONTACTLESS');
-  const [last4, setLast4] = useState('');
-  const [approval, setApproval] = useState('');
-  const [amount, setAmount] = useState('');
-  useEffect(() => {
-    if (open) {
-      setAmount(String(due));
-      setLast4('');
-      setApproval('');
-    }
-  }, [open, due]);
-  return (
-    <Dialog open={open} onClose={onClose} title="Thẻ / ví tại máy POS ngân hàng" size="sm" mode="center" footer={
-      <div className="flex w-full gap-2">
-        <Button variant="outline" onClick={onClose}>Đóng</Button>
-        <Button block loading={loading} disabled={!(Number(amount) > 0)} onClick={() => onSubmit({ method: 'CARD_TERMINAL', subMethod: sub, amount: Math.min(Number(amount), due), cardLast4: last4 || undefined, approvalCode: approval || undefined })}>Ghi nhận</Button>
-      </div>
-    }>
-      <p className="mb-3 text-sm text-ink-500">Quẹt/chạm trên máy POS ngân hàng rồi ghi nhận kết quả ở đây.</p>
-      <div className="mb-3 grid grid-cols-2 gap-2">
-        {([['CONTACTLESS', 'Thẻ không tiếp xúc'], ['APPLE_PAY', 'Apple Pay'], ['GOOGLE_PAY', 'Google Pay'], ['CHIP', 'Thẻ chip / quẹt']] as const).map(([v, l]) => (
-          <button key={v} type="button" onClick={() => setSub(v)} className={cn('min-h-[44px] rounded-xl border px-2 text-sm font-semibold', sub === v ? 'border-brand-700 bg-brand-50' : 'border-ink-100')}>{l}</button>
-        ))}
-      </div>
-      <div className="space-y-2">
-        <Input label="Số tiền" inputMode="numeric" value={amount} onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))} />
-        <Input label="4 số cuối thẻ" inputMode="numeric" maxLength={4} value={last4} onChange={(e) => setLast4(e.target.value.replace(/\D/g, '').slice(0, 4))} />
-        <Input label="Mã chuẩn chi (trên biên lai)" value={approval} onChange={(e) => setApproval(e.target.value.toUpperCase())} />
-      </div>
-    </Dialog>
-  );
-}
-
-export function VietQrDialog({ payment, bill, onClose, onConfirm, onCancel, loading }: { payment: (Payment & { qrDataUrl: string | null; bank: { bin: string | null; accountNo: string | null; accountName: string | null; purpose: string } | null }) | null; bill: BillDetail; onClose: () => void; onConfirm: (paymentId: string) => void; onCancel: (paymentId: string) => void; loading?: boolean }) {
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
-  useEffect(() => {
-    if (!payment) return setImgUrl(null);
-    if (payment.qrDataUrl) return setImgUrl(payment.qrDataUrl);
-    // Khi mở lại thanh toán đang chờ, dựng ảnh QR từ payload qua dịch vụ ảnh nội bộ không có; dùng canvas nhỏ gọn
-    import('./qr-canvas').then((m) => m.renderQr(payment.qrPayload ?? '').then(setImgUrl)).catch(() => setImgUrl(null));
-  }, [payment]);
-  if (!payment) return null;
-  return (
-    <Dialog open onClose={onClose} title="Chuyển khoản VietQR" size="sm" mode="center" dismissible={!loading}>
-      <div className="flex flex-col items-center gap-2 text-center">
-        <div className="text-3xl font-black text-brand-800 tabular-nums">{money(payment.amount)}</div>
-        {imgUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={imgUrl} alt="Mã VietQR" className="h-64 w-64 rounded-xl border border-ink-100" />
-        ) : (
-          <div className="flex h-64 w-64 items-center justify-center rounded-xl border border-ink-100 bg-paper text-sm text-ink-500">Đang tạo mã...</div>
-        )}
-        {payment.bank && (
-          <div className="w-full rounded-xl bg-paper p-3 text-left text-sm">
-            <div className="flex justify-between"><span className="text-ink-500">Ngân hàng</span><b>{payment.bank.bin}</b></div>
-            <div className="flex justify-between"><span className="text-ink-500">Số tài khoản</span><b className="tabular-nums">{payment.bank.accountNo}</b></div>
-            <div className="flex justify-between"><span className="text-ink-500">Chủ tài khoản</span><b>{payment.bank.accountName}</b></div>
-            <div className="flex justify-between"><span className="text-ink-500">Nội dung</span><b>{payment.bank.purpose}</b></div>
-          </div>
-        )}
-        <p className="text-xs text-ink-500">Bill {bill.code}. Khách quét bằng app ngân hàng; khi thấy tiền về, bấm "Đã nhận tiền".</p>
-        <div className="flex w-full gap-2">
-          <Button variant="outline" block loading={loading} onClick={() => onCancel(payment.id)}>Hủy QR</Button>
-          <Button variant="success" block loading={loading} onClick={() => onConfirm(payment.id)}>Đã nhận tiền</Button>
-        </div>
-      </div>
     </Dialog>
   );
 }

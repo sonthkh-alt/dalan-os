@@ -42,7 +42,7 @@ export function TaxInvoiceForm({ billId, initial }: { billId: string; initial?: 
         save.mutate();
       }}
     >
-      <p className="text-xs text-ink-muted">{t('taxInvoiceHint')}</p>
+      <p className="text-xs leading-relaxed text-ink-muted">{t('taxInvoiceHint')}</p>
       <Field label={t('buyerName')}>
         <input required maxLength={200} value={form.buyerName} onChange={set('buyerName')} className={inputClass} />
       </Field>
@@ -55,7 +55,7 @@ export function TaxInvoiceForm({ billId, initial }: { billId: string; initial?: 
       <Field label={t('buyerEmail')}>
         <input type="email" value={form.buyerEmail ?? ''} onChange={set('buyerEmail')} className={inputClass} />
       </Field>
-      <Button type="submit" variant="secondary" className="w-full" loading={save.isPending}>
+      <Button type="submit" className="w-full" loading={save.isPending}>
         {tc('save')}
       </Button>
     </form>

@@ -1,20 +1,21 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft } from 'lucide-react';
+import { BadgeCheck, ChevronDown, CreditCard, ExternalLink, FileText, MessageSquareHeart, RefreshCw } from 'lucide-react';
 import { billTransferPurpose } from '@dalan/domain';
 import { PAYMENT_METHOD_LABELS, type PaymentMethod, type TaxInvoiceInfo } from '@dalan/contracts';
 import { api, ApiError, isNotFound } from '@/lib/api';
 import { useGuestToken } from '@/lib/guest-data';
-import { formatVnd, localizedName } from '@/lib/format';
+import { cn, formatVnd, localizedName } from '@/lib/format';
 import { SessionGate } from '@/components/SessionGate';
 import { BillStatusBadge } from '@/components/StatusBadge';
 import { QrPayment } from '@/components/QrPayment';
 import { TaxInvoiceForm } from '@/components/TaxInvoiceForm';
-import { Button, Card, EmptyState, Spinner, useToast } from '@/components/ui';
+import { Receipt, ReceiptDivider, ReceiptRow, ReceiptTotal } from '@/components/Receipt';
+import { ListSkeleton } from '@/components/Skeletons';
+import { Button, Card, EmptyState, LinkButton, PageTitle, SectionTitle, useToast } from '@/components/ui';
 
 interface BillView {
   id: string;
@@ -71,47 +72,71 @@ function Detail({ billId }: { billId: string }) {
     onError: (err) => toast(isNotFound(err) ? t('selfPayUnavailable') : err instanceof ApiError ? err.message : tc('errorGeneric'), 'warn'),
   });
 
-  if (bill.isPending) {
-    return (
-      <div className="flex justify-center py-20">
-        <Spinner />
-      </div>
-    );
-  }
+  if (bill.isPending) return <ListSkeleton rows={2} />;
   if (bill.isError || !bill.data) {
-    return <EmptyState title={tc('errorGeneric')} action={<Button variant="secondary" onClick={() => bill.refetch()}>{tc('retry')}</Button>} />;
+    return (
+      <EmptyState
+        icon={<RefreshCw className="h-8 w-8" />}
+        title={tc('errorGeneric')}
+        action={
+          <>
+            <Button variant="secondary" onClick={() => bill.refetch()}>
+              {tc('retry')}
+            </Button>
+            <LinkButton href="/bill" variant="ghost">
+              {t('backToBill')}
+            </LinkButton>
+          </>
+        }
+      />
+    );
   }
   const b = bill.data;
   const pendingTransfer = b.payments.find((p) => p.method === 'BANK_TRANSFER' && p.status === 'PENDING' && p.qrPayload);
   const discount = b.lineDiscountTotal + b.billDiscountTotal;
+  const paid = b.status === 'PAID';
+  const succeeded = b.payments.filter((p) => p.status === 'SUCCEEDED');
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Link href="/bill" className="rounded-full p-2 text-ink-soft hover:bg-cream-dark" aria-label={tc('back')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
-        <h1 className="text-xl font-bold">{b.code}</h1>
-        <BillStatusBadge status={b.status} />
-      </div>
+    <div>
+      <PageTitle eyebrow={b.branch.name} title={b.code} action={<BillStatusBadge status={b.status} />} />
 
-      {b.status === 'PAID' ? (
-        <Card className="bg-success-soft text-center">
-          <p className="font-bold text-success">{t('thanks')}</p>
+      {paid ? (
+        <div className="mb-5 animate-rise rounded-[28px] bg-success-soft p-5 text-center">
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success text-white">
+            <BadgeCheck className="h-7 w-7" />
+          </span>
+          <p className="mt-3 font-serif text-xl font-bold text-success">{t('thanks')}</p>
           {b.eInvoice?.lookupUrl ? (
-            <a href={b.eInvoice.lookupUrl} target="_blank" rel="noreferrer" className="mt-1 block text-sm text-maroon underline">
+            <a href={b.eInvoice.lookupUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-maroon underline underline-offset-4">
               {t('lookup')} {b.eInvoice.invoiceNo ? `#${b.eInvoice.invoiceNo}` : ''}
+              <ExternalLink className="h-3.5 w-3.5" />
             </a>
           ) : null}
-          <Link href="/feedback" className="mt-2 inline-block">
-            <Button variant="secondary">{t('rate')}</Button>
-          </Link>
-        </Card>
+          <div className="mt-3">
+            <LinkButton href="/feedback" variant="secondary">
+              <MessageSquareHeart className="h-4 w-4" />
+              {t('rate')}
+            </LinkButton>
+          </div>
+        </div>
       ) : null}
 
-      {pendingTransfer && b.status !== 'PAID' ? (
-        <section>
-          <h2 className="mb-2 text-base font-bold">{t('payQr')}</h2>
+      {!paid ? (
+        <section className="mb-5 rounded-[28px] bg-linear-to-br from-maroon to-maroon-deep p-5 text-cream shadow-lift">
+          <p className="text-[11px] font-semibold tracking-[0.16em] text-gold-light uppercase">{b.paidTotal > 0 ? t('due') : t('total')}</p>
+          <p className="tabular mt-1 font-serif text-4xl font-bold">{formatVnd(b.paidTotal > 0 ? b.due : b.total)}</p>
+          {b.paidTotal > 0 ? (
+            <p className="tabular mt-1 text-sm text-cream/80">
+              {t('paid')} {formatVnd(b.paidTotal)} / {formatVnd(b.total)}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
+      {pendingTransfer && !paid ? (
+        <section className="mb-5">
+          <SectionTitle>{t('payQr')}</SectionTitle>
           <QrPayment
             qr={{
               payload: pendingTransfer.qrPayload!,
@@ -125,85 +150,92 @@ function Detail({ billId }: { billId: string }) {
         </section>
       ) : null}
 
-      {b.status !== 'PAID' && !pendingTransfer ? (
-        <Card>
-          <p className="text-sm text-ink-soft">{t('noQrYet')}</p>
+      {!paid && !pendingTransfer ? (
+        <Card className="mb-5">
+          <p className="text-sm leading-relaxed text-ink-soft">{t('noQrYet')}</p>
           <Button variant="secondary" className="mt-3 w-full" onClick={() => selfPay.mutate()} loading={selfPay.isPending}>
+            <CreditCard className="h-4 w-4" />
             {t('selfPay')}
           </Button>
         </Card>
       ) : null}
 
-      <Card>
-        <h2 className="mb-2 text-base font-bold">{t('lines')}</h2>
-        <ul className="divide-y divide-line text-sm">
+      <Receipt>
+        <p className="text-center text-xs tracking-wider text-ink-muted uppercase">{t('lines')}</p>
+        <ReceiptDivider />
+        <ul className="space-y-2">
           {b.lines.map((l) => (
-            <li key={l.id} className="flex items-start justify-between gap-2 py-2">
-              <span>
-                <span className="text-maroon">{Math.round(l.orderLine.quantity * l.quantityShare * 1000) / 1000}</span> × {localizedName(locale, l.orderLine.nameSnapshot)}
-                {l.discountAmount > 0 ? <span className="block text-xs text-success">-{formatVnd(l.discountAmount)}</span> : null}
+            <li key={l.id} className="flex items-baseline gap-3 text-sm">
+              <span className="tabular w-10 shrink-0 text-ink-muted">{Math.round(l.orderLine.quantity * l.quantityShare * 1000) / 1000}×</span>
+              <span className="min-w-0 flex-1 text-ink">
+                {localizedName(locale, l.orderLine.nameSnapshot)}
+                {l.discountAmount > 0 ? <span className="tabular block text-xs text-success">−{formatVnd(l.discountAmount)}</span> : null}
               </span>
-              <span className="font-medium">{formatVnd(l.amount)}</span>
+              <span className="tabular shrink-0 font-medium">{formatVnd(l.amount)}</span>
             </li>
           ))}
         </ul>
-        <dl className="mt-3 space-y-1 border-t border-line pt-2 text-sm">
-          <Row label={t('subtotal')} value={formatVnd(b.subtotal)} />
-          {discount > 0 ? <Row label={t('discount')} value={`-${formatVnd(discount)}`} /> : null}
-          {b.serviceChargeAmount > 0 ? <Row label={t('serviceCharge', { pct: b.serviceChargeBps / 100 })} value={formatVnd(b.serviceChargeAmount)} /> : null}
-          <Row label={b.branch.priceIncludesVat ? t('vat') : t('vatExcluded')} value={formatVnd(b.vatAmount)} muted />
-          {b.roundingAdjustment !== 0 ? <Row label="Làm tròn" value={formatVnd(b.roundingAdjustment)} muted /> : null}
-          <div className="flex items-center justify-between pt-1 text-base">
-            <dt className="font-bold">{t('total')}</dt>
-            <dd className="text-xl font-bold text-maroon">{formatVnd(b.total)}</dd>
-          </div>
-          {b.paidTotal > 0 ? <Row label={t('paid')} value={formatVnd(b.paidTotal)} /> : null}
-          {b.due > 0 && b.paidTotal > 0 ? <Row label={t('due')} value={formatVnd(b.due)} /> : null}
+        <ReceiptDivider />
+        <dl className="space-y-0.5">
+          <ReceiptRow label={t('subtotal')} value={formatVnd(b.subtotal)} />
+          {discount > 0 ? <ReceiptRow label={t('discount')} value={`−${formatVnd(discount)}`} accent="success" /> : null}
+          {b.serviceChargeAmount > 0 ? <ReceiptRow label={t('serviceCharge', { pct: b.serviceChargeBps / 100 })} value={formatVnd(b.serviceChargeAmount)} /> : null}
+          <ReceiptRow label={b.branch.priceIncludesVat ? t('vat') : t('vatExcluded')} value={formatVnd(b.vatAmount)} muted />
+          {b.roundingAdjustment !== 0 ? <ReceiptRow label={t('rounding')} value={formatVnd(b.roundingAdjustment)} muted /> : null}
         </dl>
-      </Card>
-
-      {b.payments.filter((p) => p.status === 'SUCCEEDED').length > 0 ? (
-        <Card>
-          <h2 className="mb-2 text-base font-bold">{t('payments')}</h2>
-          <ul className="space-y-1 text-sm">
-            {b.payments
-              .filter((p) => p.status === 'SUCCEEDED')
-              .map((p) => (
-                <li key={p.id} className="flex items-center justify-between">
-                  <span>{p.subMethod === 'APPLE_PAY' ? 'Apple Pay' : PAYMENT_METHOD_LABELS[p.method]}</span>
-                  <span className="font-medium">{formatVnd(p.amount)}</span>
-                </li>
+        <ReceiptDivider />
+        <dl className="space-y-1">
+          <ReceiptTotal label={t('total')} value={formatVnd(b.total)} />
+          {b.paidTotal > 0 ? <ReceiptRow label={t('paid')} value={formatVnd(b.paidTotal)} accent="success" /> : null}
+          {b.due > 0 && b.paidTotal > 0 ? <ReceiptRow label={t('due')} value={formatVnd(b.due)} strong /> : null}
+        </dl>
+        {succeeded.length > 0 ? (
+          <>
+            <ReceiptDivider />
+            <p className="mb-1 text-xs font-semibold tracking-wider text-ink-muted uppercase">{t('payments')}</p>
+            <dl>
+              {succeeded.map((p) => (
+                <ReceiptRow key={p.id} label={p.subMethod === 'APPLE_PAY' ? 'Apple Pay' : PAYMENT_METHOD_LABELS[p.method]} value={formatVnd(p.amount)} />
               ))}
-          </ul>
-        </Card>
-      ) : null}
+            </dl>
+          </>
+        ) : null}
+      </Receipt>
 
-      {b.status !== 'PAID' ? (
-        <Card>
-          <button type="button" className="flex w-full items-center justify-between text-left font-semibold" onClick={() => setShowTax((v) => !v)} aria-expanded={showTax}>
-            {t('taxInvoice')}
-            <span className="text-ink-muted">{showTax ? '−' : '+'}</span>
+      {!paid ? (
+        <section className="mt-5 overflow-hidden rounded-3xl bg-paper shadow-card ring-1 ring-line-soft">
+          <button type="button" className="flex min-h-14 w-full items-center gap-3 px-4 text-left" onClick={() => setShowTax((v) => !v)} aria-expanded={showTax}>
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-gold">
+              <FileText className="h-5 w-5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold text-ink">{t('taxInvoice')}</span>
+              {b.taxInvoiceInfo?.buyerName && !showTax ? (
+                <span className="block truncate text-xs text-ink-muted">
+                  {b.taxInvoiceInfo.buyerName} {b.taxInvoiceInfo.buyerTaxCode ? `· MST ${b.taxInvoiceInfo.buyerTaxCode}` : ''}
+                </span>
+              ) : (
+                <span className="block text-xs text-ink-muted">{t('taxInvoiceHint')}</span>
+              )}
+            </span>
+            <ChevronDown className={cn('h-5 w-5 text-ink-muted transition-transform', showTax && 'rotate-180')} />
           </button>
           {showTax ? (
-            <div className="mt-3">
+            <div className="border-t border-line-soft px-4 pt-3 pb-4">
               <TaxInvoiceForm billId={b.id} initial={b.taxInvoiceInfo} />
             </div>
-          ) : b.taxInvoiceInfo?.buyerName ? (
-            <p className="mt-1 text-xs text-ink-muted">
-              {b.taxInvoiceInfo.buyerName} {b.taxInvoiceInfo.buyerTaxCode ? `· MST ${b.taxInvoiceInfo.buyerTaxCode}` : ''}
-            </p>
           ) : null}
-        </Card>
+        </section>
       ) : null}
-    </div>
-  );
-}
 
-function Row({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
-  return (
-    <div className={`flex items-center justify-between ${muted ? 'text-ink-muted' : ''}`}>
-      <dt>{label}</dt>
-      <dd className="font-medium">{value}</dd>
+      {!paid ? (
+        <div className="mt-4 text-center">
+          <LinkButton href="/feedback" variant="ghost" size="sm">
+            <MessageSquareHeart className="h-4 w-4" />
+            {t('rate')}
+          </LinkButton>
+        </div>
+      ) : null}
     </div>
   );
 }

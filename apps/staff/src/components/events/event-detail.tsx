@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { ArrowLeft, Printer } from 'lucide-react';
+import { CalendarX, Printer } from 'lucide-react';
+import { PageHeader } from '@/components/ui/page-header';
 import { EVENT_KIND_LABELS } from '@dalan/contracts';
 import { errorMessage } from '@/lib/api';
 import { useCan } from '@/lib/auth-store';
@@ -12,7 +13,7 @@ import { dateLabel, phoneDisplay } from '@/lib/ops-utils';
 import { money } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog, Dialog } from '@/components/ui/dialog';
-import { Badge, Loading, Textarea } from '@/components/ui/primitives';
+import { Badge, EmptyState, Loading, Textarea } from '@/components/ui/primitives';
 import { toast } from '@/components/ui/toast';
 import { MoneyInput, TabBar } from '@/components/ops/ui';
 import { EVENT_STATUS, LAYOUT_LABELS, nextActions, type EventAction } from './labels';
@@ -20,6 +21,8 @@ import { evInvalidate, InfoTab, MenusTab, QuoteTab, ServicesTab, type TabProps }
 import { AdjustTab, BeoTab, ConfirmTab, ContractTab, PaymentsTab, SettleTab } from './event-tabs-b';
 
 type Tab = 'info' | 'menus' | 'services' | 'quote' | 'contract' | 'payments' | 'confirm' | 'beo' | 'adjust' | 'settle';
+
+const printLinkCls = 'inline-flex min-h-[44px] items-center gap-1.5 rounded-xl bg-white px-3 text-sm font-semibold text-ink-900 shadow-card ring-1 ring-ink-200 ring-inset transition hover:bg-ink-50';
 
 const TABS: { value: Tab; label: string }[] = [
   { value: 'info', label: 'Thông tin' },
@@ -62,7 +65,22 @@ export function EventDetailScreen({ eventId }: { eventId: string }) {
   const onErr = (e: unknown) => toast.error(errorMessage(e));
 
   if (q.isLoading) return <Loading />;
-  if (!q.data) return <div className="p-4 text-red-700">{errorMessage(q.error)}</div>;
+  if (!q.data)
+    return (
+      <div className="flex min-h-full flex-col">
+        <PageHeader back="/events" breadcrumb={[{ label: 'Tiệc', href: '/events' }]} title="Hồ sơ tiệc" className="border-b border-ink-100 bg-white" />
+        <EmptyState
+          icon={CalendarX}
+          title="Không mở được hồ sơ tiệc"
+          hint={errorMessage(q.error)}
+          action={
+            <Link href="/events" className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-brand-700 px-4 font-semibold text-white shadow-brand hover:bg-brand-800">
+              Về danh sách tiệc
+            </Link>
+          }
+        />
+      </div>
+    );
   const ev = q.data;
   const props: TabProps = { ev, canManage, canSettle, canCollect: canSettle || canBilling };
   const actions = nextActions(ev.status).filter((a) => (a.direct === 'start' || a.direct === 'close' || a.to === 'SETTLED' ? canSettle || canManage : canManage));
@@ -70,32 +88,34 @@ export function EventDetailScreen({ eventId }: { eventId: string }) {
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="border-b border-ink-100 bg-white px-2 py-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href="/events" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-ink-100" aria-label="Quay lại">
-            <ArrowLeft className="h-6 w-6" />
-          </Link>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="truncate text-xl font-bold">{ev.companyName ?? ev.contactName}</h1>
+      <div className="border-b border-ink-100 bg-white pb-3">
+        <PageHeader
+          back="/events"
+          breadcrumb={[{ label: 'Tiệc', href: '/events' }, { label: ev.code }]}
+          title={
+            <span className="flex min-w-0 items-center gap-2">
+              <span className="truncate">{ev.companyName ?? ev.contactName}</span>
               <Badge tone={st.tone}>{st.label}</Badge>
               {ev.holdExpiresAt && ['LEAD', 'QUOTED'].includes(ev.status) && <Badge tone="warning">Giữ sảnh đến {new Date(ev.holdExpiresAt).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</Badge>}
-            </div>
-            <div className="text-sm text-ink-500">
-              {ev.code} · {EVENT_KIND_LABELS[ev.kind]} · {dateLabel(ev.eventDate)} {ev.startTime}–{ev.endTime} · {ev.confirmedTables ?? ev.expectedTables} mâm
-              {ev.halls.length ? ` · ${ev.halls.map((h) => `${h.hall.name} (${LAYOUT_LABELS[h.layout] ?? h.layout})`).join(', ')}` : ''} · {ev.contactName} {phoneDisplay(ev.contactPhone)}
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <a href={`/events/${ev.id}/print/quote`} target="_blank" rel="noreferrer" className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-ink-300 bg-white px-3 text-sm font-semibold hover:bg-ink-100">
-              <Printer className="h-4 w-4" /> Báo giá
-            </a>
-            <a href={`/events/${ev.id}/print/beo`} target="_blank" rel="noreferrer" className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-ink-300 bg-white px-3 text-sm font-semibold hover:bg-ink-100">
-              <Printer className="h-4 w-4" /> BEO
-            </a>
-          </div>
+            </span>
+          }
+          subtitle={`${EVENT_KIND_LABELS[ev.kind]} · ${dateLabel(ev.eventDate)} ${ev.startTime}–${ev.endTime} · ${ev.confirmedTables ?? ev.expectedTables} mâm`}
+          actions={
+            <>
+              <a href={`/events/${ev.id}/print/quote`} target="_blank" rel="noreferrer" className={printLinkCls}>
+                <Printer className="h-4 w-4" /> Báo giá
+              </a>
+              <a href={`/events/${ev.id}/print/beo`} target="_blank" rel="noreferrer" className={printLinkCls}>
+                <Printer className="h-4 w-4" /> BEO
+              </a>
+            </>
+          }
+        />
+        <div className="px-3 text-sm text-ink-500 md:px-5">
+          {ev.halls.length ? `${ev.halls.map((h) => `${h.hall.name} (${LAYOUT_LABELS[h.layout] ?? h.layout})`).join(', ')} · ` : ''}
+          {ev.contactName} {phoneDisplay(ev.contactPhone)}
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-2 pl-1">
+        <div className="mt-2 flex flex-wrap items-center gap-2 px-3 md:px-5">
           <span className="text-sm text-ink-700">
             Tổng <b className="tabular-nums">{money(ev.totals.total)}</b> · đã thu <b className="text-emerald-700 tabular-nums">{money(ev.totals.paid)}</b> · còn <b className="text-brand-800 tabular-nums">{money(ev.totals.due)}</b>
           </span>

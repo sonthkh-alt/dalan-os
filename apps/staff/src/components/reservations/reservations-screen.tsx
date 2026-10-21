@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Footprints, Plus, Search } from 'lucide-react';
+import { CalendarX, ChevronLeft, ChevronRight, Footprints, Plus, Search } from 'lucide-react';
 import { useCan } from '@/lib/auth-store';
 import { useFloor } from '@/lib/queries';
 import { useReservations, type Reservation, type ReservationStatus } from '@/lib/queries-ops';
@@ -73,7 +73,7 @@ export function ReservationsScreen() {
       />
       <div className="space-y-3 p-3 md:p-4">
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 rounded-xl border border-ink-100 bg-white p-1">
+          <div className="flex items-center gap-1 rounded-xl bg-white p-1 shadow-card ring-1 ring-ink-900/[0.06]">
             <button type="button" className="flex h-10 w-10 items-center justify-center rounded-lg hover:bg-ink-100" onClick={() => setDate(addDays(date, -1))} aria-label="Ngày trước">
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -185,9 +185,9 @@ function ReservationRow({ r, onSelect }: { r: Reservation; onSelect: (id: string
 }
 
 function ReservationList({ list, onSelect }: { list: Reservation[]; onSelect: (id: string) => void }) {
-  if (list.length === 0) return <EmptyState title="Không có đặt bàn" hint="Đổi ngày hoặc bộ lọc để xem thêm." />;
+  if (list.length === 0) return <EmptyState icon={CalendarX} title="Không có đặt bàn" hint="Đổi ngày hoặc bộ lọc để xem thêm." />;
   return (
-    <div className="divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white">
+    <div className="divide-y divide-ink-100 overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06]">
       {list.map((r) => (
         <ReservationRow key={r.id} r={r} onSelect={onSelect} />
       ))}
@@ -200,7 +200,7 @@ function WaitlistView({ list, onSelect }: { list: Reservation[]; onSelect: (id: 
   return (
     <div className="space-y-2">
       <p className="text-sm text-ink-500">Sắp theo thứ tự chờ. Mở từng khách để “Đưa lên từ danh sách chờ” (xác nhận) hoặc đón khách ngay khi có bàn trống.</p>
-      <div className="divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white">
+      <div className="divide-y divide-ink-100 overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06]">
         {list.map((r) => (
           <div key={r.id} className="flex items-center">
             <span className="w-10 shrink-0 text-center text-lg font-black text-brand-800">#{r.waitlistPosition ?? '–'}</span>
@@ -266,7 +266,7 @@ function Timeline({ list, date, onSelect }: { list: Reservation[]; date: string;
 
   if (floor.isLoading) return <Loading />;
   return (
-    <div className="scrollbar-thin overflow-x-auto rounded-2xl border border-ink-100 bg-white">
+    <div className="scrollbar-thin overflow-x-auto rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06]">
       <div className="min-w-[960px]">
         <div className="relative ml-36 h-8 border-b border-ink-100">
           {hours.map((h) => (

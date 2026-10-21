@@ -38,3 +38,8 @@ export const BRANCHES: BranchInfo[] = [
 export function findBranch(code: string): BranchInfo | undefined {
   return BRANCHES.find((b) => b.code === code.toUpperCase());
 }
+
+/** Link chỉ đường Google Maps từ tên + địa chỉ cơ sở. */
+export function mapsUrl(name: string, address: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name}, ${address}`)}`;
+}

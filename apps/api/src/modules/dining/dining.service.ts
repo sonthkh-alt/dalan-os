@@ -70,6 +70,10 @@ export class DiningService {
     ]);
     const openRequests = new Map<string, number>();
     for (const r of requests) openRequests.set(r.sessionId, (openRequests.get(r.sessionId) ?? 0) + 1);
+    // Tên nhân viên phụ trách bàn (hiện trên thẻ bàn ở sơ đồ)
+    const serverIds = [...new Set(areas.flatMap((a) => a.tables.flatMap((t) => t.sessionTables.map((st) => st.session.serverId))).filter((id): id is string => !!id))];
+    const servers = serverIds.length ? await this.prisma.staff.findMany({ where: { id: { in: serverIds } }, select: { id: true, fullName: true } }) : [];
+    const serverName = new Map(servers.map((s) => [s.id, s.fullName]));
     return {
       branch: { id: branch.id, code: branch.code, name: branch.name, serviceChargeBps: branch.serviceChargeBps },
       generatedAt: new Date().toISOString(),
@@ -105,6 +109,7 @@ export class DiningService {
                   guestCount: session.guestCount,
                   openedAt: session.openedAt,
                   serverId: session.serverId,
+                  serverName: session.serverId ? (serverName.get(session.serverId) ?? null) : null,
                   tableIds: session.tables.map((x) => x.tableId),
                   linesSent: session.orderLines.filter((l) => SENT_TO_KITCHEN.has(l.status as never)).length,
                   linesReady: session.orderLines.filter((l) => l.status === 'READY').length,

@@ -51,7 +51,7 @@ export function AuditAdmin() {
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-bold text-ink-900">Nhật ký thao tác</h1>
+      <h2 className="sr-only">Nhật ký thao tác</h2>
       <Card>
         <form
           className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4"

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, PartyPopper, Plus, Search } from 'lucide-react';
 import { EVENT_KIND_LABELS } from '@dalan/contracts';
 import { ApiError, errorMessage } from '@/lib/api';
 import { useBranchId, useCan } from '@/lib/auth-store';
@@ -83,7 +83,7 @@ export function EventsScreen() {
 function EventCard({ e }: { e: EventListItem }) {
   const tables = e.confirmedTables ?? e.expectedTables;
   return (
-    <Link href={`/events/${e.id}`} className="block rounded-xl border border-ink-100 bg-white p-3 shadow-sm hover:border-brand-300">
+    <Link href={`/events/${e.id}`} className="block rounded-xl bg-white p-3 shadow-card ring-1 ring-ink-900/[0.06] transition hover:-translate-y-0.5 hover:shadow-raised hover:ring-brand-300">
       <div className="flex items-center gap-1.5 text-xs text-ink-500">
         <span className="font-mono">{e.code}</span>
         <span className="ml-auto">{EVENT_KIND_LABELS[e.kind]}</span>
@@ -148,7 +148,7 @@ function Pipeline({ list }: { list: EventListItem[] }) {
 
 function EventTable({ list }: { list: EventListItem[] }) {
   const router = useRouter();
-  if (list.length === 0) return <EmptyState title="Chưa có tiệc" />;
+  if (list.length === 0) return <EmptyState icon={PartyPopper} title="Chưa có tiệc" hint="Tạo tiệc mới từ yêu cầu của khách để bắt đầu quy trình báo giá, hợp đồng và BEO." />;
   return (
     <Table head={['Ngày', 'Mã', 'Loại', 'Khách', 'Sảnh', 'Mâm', 'Tổng', 'Đã thu', 'Trạng thái']}>
       {list.map((e) => (
@@ -208,7 +208,7 @@ function HallCalendar() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex items-center gap-1 rounded-xl border border-ink-100 bg-white p-1">
+        <div className="flex items-center gap-1 rounded-xl bg-white p-1 shadow-card ring-1 ring-ink-900/[0.06]">
           <button type="button" className="flex h-10 w-10 items-center justify-center rounded-lg hover:bg-ink-100" onClick={() => move(-1)} aria-label="Trước">
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -245,7 +245,7 @@ function HallCalendar() {
       {cal.isLoading ? (
         <Loading />
       ) : mode === 'month' ? (
-        <div className="overflow-hidden rounded-2xl border border-ink-100 bg-white">
+        <div className="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06]">
           <div className="grid grid-cols-7 border-b border-ink-100 bg-paper text-center text-xs font-semibold text-ink-500">
             {days.slice(0, 7).map((d) => (
               <div key={d} className="py-2">
@@ -273,7 +273,7 @@ function HallCalendar() {
           </div>
         </div>
       ) : (
-        <div className="scrollbar-thin overflow-x-auto rounded-2xl border border-ink-100 bg-white">
+        <div className="scrollbar-thin overflow-x-auto rounded-2xl bg-white shadow-card ring-1 ring-ink-900/[0.06]">
           <div className="grid min-w-[900px] grid-cols-[160px_repeat(7,1fr)]">
             <div className="border-b border-ink-100 bg-paper" />
             {days.map((d) => (

@@ -33,8 +33,8 @@ export function SettingsAdmin() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-xl font-bold text-ink-900">Cấu hình</h1>
-        <Segmented className="ml-auto" value={tab} onChange={setTab} options={tabs} />
+        <h2 className="sr-only">Cấu hình</h2>
+        <Segmented value={tab} onChange={setTab} options={tabs} />
       </div>
       {tab === 'branch' && <BranchSettings />}
       {tab === 'stations' && <StationsPrintersPanel />}

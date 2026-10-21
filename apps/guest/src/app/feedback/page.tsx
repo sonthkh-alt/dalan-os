@@ -9,7 +9,8 @@ import { useGuestSession } from '@/lib/session-store';
 import { localizedName } from '@/lib/format';
 import { SessionGate } from '@/components/SessionGate';
 import { StarRating } from '@/components/StarRating';
-import { Button, Card, Chip, inputClass, useToast } from '@/components/ui';
+import { Heart, House, UtensilsCrossed } from 'lucide-react';
+import { Button, Chip, LinkButton, PageTitle, inputClass, useToast } from '@/components/ui';
 
 export default function FeedbackPage() {
   return (
@@ -57,10 +58,23 @@ function Feedback() {
 
   if (done) {
     return (
-      <Card className="text-center">
-        <p className="text-lg font-bold text-success">{t('thanks')}</p>
+      <div className="animate-rise py-10 text-center">
+        <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-maroon-soft text-maroon">
+          <Heart className="h-9 w-9" fill="currentColor" />
+        </span>
+        <p className="mt-5 font-serif text-2xl font-bold text-ink">{t('thanks')}</p>
         <p className="mt-1 text-sm text-ink-soft">{t('savedLocal')}</p>
-      </Card>
+        <div className="mx-auto mt-6 grid grid-cols-1 max-w-xs gap-2.5">
+          <LinkButton href="/menu" size="lg">
+            <UtensilsCrossed className="h-5 w-5" />
+            {t('backToMenu')}
+          </LinkButton>
+          <LinkButton href="/" variant="secondary">
+            <House className="h-4 w-4" />
+            {t('home')}
+          </LinkButton>
+        </div>
+      </div>
     );
   }
   return (
@@ -71,11 +85,14 @@ function Feedback() {
         submit.mutate();
       }}
     >
-      <h1 className="text-center text-xl font-bold">{t('title')}</h1>
-      <StarRating value={rating} onChange={setRating} label={t('rating')} />
+      <PageTitle eyebrow={t('eyebrow')} title={t('title')} />
+      <div className="rounded-[28px] bg-paper p-5 text-center shadow-card ring-1 ring-line-soft">
+        <StarRating value={rating} onChange={setRating} label={t('rating')} />
+        <p className="mt-2 font-semibold text-maroon">{t(`scale.${rating as 1 | 2 | 3 | 4 | 5}`)}</p>
+      </div>
       {dishes.length > 0 ? (
         <div>
-          <p className="mb-2 text-sm font-medium text-ink-soft">{t('liked')}</p>
+          <p className="mb-2 text-sm font-semibold text-ink">{t('liked')}</p>
           <div className="flex flex-wrap gap-2">
             {dishes.map((d) => (
               <Chip key={d.name} active={liked.includes(d.name)} onClick={() => setLiked((prev) => (prev.includes(d.name) ? prev.filter((x) => x !== d.name) : [...prev, d.name]))}>
@@ -86,8 +103,8 @@ function Feedback() {
         </div>
       ) : null}
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-ink-soft">{t('comment')}</span>
-        <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder={t('commentPlaceholder')} rows={4} maxLength={1000} className={inputClass} />
+        <span className="mb-1.5 block text-sm font-semibold text-ink">{t('comment')}</span>
+        <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder={t('commentPlaceholder')} rows={4} maxLength={1000} className={`${inputClass} resize-none`} />
       </label>
       <Button type="submit" size="lg" className="w-full" loading={submit.isPending}>
         {t('submit')}

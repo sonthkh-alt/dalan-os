@@ -90,7 +90,7 @@ export function FloorAdmin() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-xl font-bold text-ink-900">Sơ đồ bàn</h1>
+        <h2 className="sr-only">Sơ đồ bàn</h2>
         <div className="ml-auto flex flex-wrap gap-2">
           <Link href="/admin/floor/qr" target="_blank" className="inline-flex min-h-[40px] items-center gap-2 rounded-xl border border-ink-300 bg-white px-3 text-sm font-semibold hover:bg-ink-100">
             <Printer className="h-4 w-4" /> In mã QR bàn

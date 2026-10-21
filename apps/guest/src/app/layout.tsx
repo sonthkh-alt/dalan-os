@@ -1,12 +1,28 @@
 import type { Metadata, Viewport } from 'next';
+import { Be_Vietnam_Pro, Playfair_Display } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { QueryProvider } from '@/lib/query-provider';
 import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
+import { AppMain } from '@/components/AppMain';
+import { NavTracker } from '@/components/NavTracker';
 import { SwRegister } from '@/components/SwRegister';
 import { Toaster } from '@/components/ui';
 import './globals.css';
+
+const beVietnam = Be_Vietnam_Pro({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-be-vietnam',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin', 'vietnamese'],
+  variable: '--font-playfair',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: { default: 'Dạ Lan – Gọi món tại bàn', template: '%s · Dạ Lan' },
@@ -27,13 +43,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
   const messages = await getMessages();
   return (
-    <html lang={locale}>
-      <body className="min-h-dvh bg-cream text-ink">
+    <html lang={locale} className={`${beVietnam.variable} ${playfair.variable}`}>
+      <body className="min-h-dvh bg-cream font-sans text-ink">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <QueryProvider>
+            <NavTracker />
             <SwRegister />
             <Header />
-            <main className="mx-auto w-full max-w-lg px-4 pt-3 pb-36">{children}</main>
+            <AppMain>{children}</AppMain>
             <BottomNav />
             <Toaster />
           </QueryProvider>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Pencil, Plus, Search } from 'lucide-react';
+import { AlertTriangle, PackageOpen, Pencil, Plus, Search } from 'lucide-react';
 import { STOCK_MOVEMENT_LABELS } from '@dalan/contracts';
 import { errorMessage } from '@/lib/api';
 import { useCan } from '@/lib/auth-store';
@@ -115,7 +115,7 @@ function LevelsTab({ warehouseId, setWarehouseId, warehouses }: SharedWh) {
       {levels.isLoading ? (
         <Loading />
       ) : rows.length === 0 ? (
-        <EmptyState title="Kho chưa có tồn" hint="Nhập hàng để bắt đầu theo dõi tồn kho." />
+        <EmptyState icon={PackageOpen} title="Kho chưa có tồn" hint="Nhập hàng để bắt đầu theo dõi tồn kho." />
       ) : (
         <Table head={['Mã', 'Nguyên liệu', 'Nhóm', 'Tồn', 'Tối thiểu', 'Giá vốn/ĐV', 'Giá trị', '']}>
           {rows.map((r) => (
