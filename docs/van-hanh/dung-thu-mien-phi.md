@@ -94,6 +94,15 @@ riêng (xem `docs/van-hanh/trien-khai.md`).
 
 ## Xử lý sự cố
 
+- **Lỗi "cannot have more than 1 free tier Key Value instance" và tên dịch vụ có hậu tố lạ
+  (ví dụ `-pkxz`):** tài khoản đã có một bản triển khai trước. Chỉ tạo Blueprint **một lần**; các lần
+  cập nhật sau Render tự đồng bộ khi có commit mới (hoặc bấm **Manual sync** trên Blueprint cũ). Xóa
+  Blueprint trùng: **Blueprints → Blueprint bị lỗi → Settings → Delete Blueprint**, rồi xóa từng dịch vụ
+  có hậu tố còn lại (**dịch vụ → Settings → Delete Web Service**), vì xóa Blueprint không xóa dịch vụ.
+- **Bản triển khai cũ vẫn dùng PostgreSQL của Render (hết hạn sau 30 ngày):** mở dịch vụ
+  `dalanos-sonthkh-api` → **Environment**. Nếu `DATABASE_URL` có tên máy chủ bắt đầu bằng `dpg-` là
+  đang dùng Render. Thay bằng chuỗi kết nối Neon, bấm **Save, rebuild, and deploy**; API tự tạo bảng và
+  nạp dữ liệu mẫu trên Neon. Khi đã đăng nhập được, xóa database `dalanos-db` trên Render.
 - **API không lên, log báo lỗi kết nối cơ sở dữ liệu:** kiểm tra `DATABASE_URL` trong Dashboard của
   `dalanos-sonthkh-api` đúng chuỗi Neon (bắt đầu bằng `postgresql://`, có `sslmode=require`) và
   project Neon chưa bị xóa hoặc vượt hạn mức. Sửa xong bấm **Manual Deploy**.
