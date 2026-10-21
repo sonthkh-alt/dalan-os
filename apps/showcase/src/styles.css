@@ -1,0 +1,103 @@
+@import 'tailwindcss';
+
+/* Cùng bộ màu thương hiệu với apps/guest (đỏ sẫm, nền kem ấm). */
+@theme {
+  --color-cream: #fbf7f0;
+  --color-cream-dark: #f1e9dc;
+  --color-paper: #ffffff;
+  --color-maroon: #8b1e2d;
+  --color-maroon-dark: #6e1522;
+  --color-maroon-soft: #f6e4e6;
+  --color-gold: #b8860b;
+  --color-gold-dark: #8a6508;
+  --color-gold-soft: #f7ecd2;
+  --color-ink: #1f1a17;
+  --color-ink-soft: #5c524c;
+  --color-ink-muted: #756a63;
+  --color-line: #e6dccd;
+  --color-success: #1f7a4d;
+  --color-success-soft: #e3f3ea;
+  --color-warn: #9a5200;
+  --color-warn-soft: #fff1dc;
+  --font-sans:
+    'Be Vietnam Pro', 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', Arial, system-ui,
+    sans-serif;
+  --font-display: 'Playfair Display', 'Noto Serif', Georgia, 'Times New Roman', serif;
+  --radius-card: 1rem;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  background: var(--color-cream);
+  scroll-padding-top: 8rem;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-maroon);
+  outline-offset: 2px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Hoa văn chấm mảnh cho nền hero, thuần CSS. */
+.pattern-dots {
+  background-image: radial-gradient(rgb(139 30 45 / 0.12) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.rule-ornament {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-gold);
+}
+.rule-ornament::before,
+.rule-ornament::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, currentColor, transparent);
+}
+
+.leader {
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 1px dotted var(--color-line);
+  transform: translateY(-0.35em);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}

@@ -686,6 +686,46 @@ importers:
         specifier: 'catalog:'
         version: 5.0.5(@types/node@24.19.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15))
 
+  apps/showcase:
+    dependencies:
+      '@dalan/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+    devDependencies:
+      '@dalan/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@tailwindcss/vite':
+        specifier: 4.3.3
+        version: 4.3.3(vite@5.4.21(@types/node@24.19.2)(lightningcss@1.33.0))
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.19.2
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.3.0(@types/react@19.3.0)
+      '@vitejs/plugin-react':
+        specifier: 4.7.0
+        version: 4.7.0(vite@5.4.21(@types/node@24.19.2)(lightningcss@1.33.0))
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.3.3
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 5.4.21
+        version: 5.4.21(@types/node@24.19.2)(lightningcss@1.33.0)
+
   apps/staff:
     dependencies:
       '@dalan/contracts':

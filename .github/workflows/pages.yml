@@ -1,0 +1,51 @@
+name: GitHub Pages (showcase)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/showcase/**'
+      - 'data/seed/**'
+      - 'packages/domain/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Chỉ một lần triển khai Pages chạy tại một thời điểm; không hủy lần đang chạy dở.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @dalan/domain build
+      - run: pnpm --filter @dalan/showcase build
+        env:
+          SHOWCASE_BASE: /dalan-os/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/showcase/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

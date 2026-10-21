@@ -1,0 +1,29 @@
+{
+  "name": "@dalan/showcase",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Trang gioi thieu tinh (GitHub Pages): thuc don so Nha hang Da Lan va gioi thieu he thong DaLan OS",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3003",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@dalan/domain": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@dalan/config": "workspace:*",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "4.7.0",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "5.4.21"
+  }
+}
