@@ -22,13 +22,15 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+!.vscode/launch.json
 .idea/
 # docker volumes
 infra/volumes/
 # playwright
 playwright-report/
 test-results/
-storage/
+/storage/
+apps/api/storage/
 
 # cấu hình cục bộ của Claude Code
 .claude/

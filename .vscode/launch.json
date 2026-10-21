@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API (dist, đã build)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/api/dist/main.js",
+      "cwd": "${workspaceFolder}/apps/api",
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/apps/api/dist/**/*.js"]
+    },
+    {
+      "name": "Seed dữ liệu",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["tsx", "prisma/seed.ts"],
+      "cwd": "${workspaceFolder}/packages/db",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Smoke test API",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/api/scripts/smoke.mjs",
+      "cwd": "${workspaceFolder}/apps/api",
+      "console": "integratedTerminal"
+    }
+  ]
+}
