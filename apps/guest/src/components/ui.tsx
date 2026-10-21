@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { create } from 'zustand';
 import { cn } from '@/lib/format';
@@ -91,8 +92,9 @@ export function Sheet({ open, onClose, title, children, footer }: { open: boolea
       document.body.style.overflow = '';
     };
   }, [open, onClose]);
-  if (!open) return null;
-  return (
+  if (!open || typeof document === 'undefined') return null;
+  // Portal ra body để tổ tiên có backdrop-filter/transform không cắt mất sheet
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
       <button type="button" aria-label="Đóng" className="absolute inset-0 animate-fade-in bg-ink/50" onClick={onClose} />
       <div className="relative flex max-h-[92dvh] w-full max-w-lg animate-sheet-up flex-col rounded-t-3xl bg-cream shadow-2xl">
@@ -110,7 +112,8 @@ export function Sheet({ open, onClose, title, children, footer }: { open: boolea
         <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-4">{children}</div>
         {footer ? <div className="safe-bottom border-t border-line bg-cream px-5 pt-3">{footer}</div> : null}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,15 +35,17 @@ export function Dialog({ open, onClose, title, children, footer, mode = 'auto', 
     };
   }, [open, onClose, dismissible]);
 
-  if (!open) return null;
+  if (!open || typeof document === 'undefined') return null;
   const sheet = mode === 'sheet';
   const center = mode === 'center';
-  return (
+  // Portal ra body: tổ tiên có backdrop-filter/transform (vd. thanh dưới làm mờ nền) sẽ giam
+  // phần tử fixed trong khung của nó và cắt mất hộp thoại.
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-ink-900/50" onClick={dismissible ? onClose : undefined} />
       <div
         className={cn(
-          'relative flex max-h-[94vh] w-full flex-col bg-white shadow-2xl',
+          'relative flex max-h-[94dvh] w-full flex-col bg-white shadow-2xl',
           sheet || mode === 'auto' ? 'rounded-t-2xl sm:rounded-2xl' : 'rounded-2xl',
           center && 'mx-4 rounded-2xl',
           sizes[size],
@@ -61,7 +64,8 @@ export function Dialog({ open, onClose, title, children, footer, mode = 'auto', 
         <div className="scrollbar-thin flex-1 overflow-y-auto px-4 py-3">{children}</div>
         {footer && <div className="safe-bottom flex flex-wrap gap-2 border-t border-ink-100 px-4 py-3">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
