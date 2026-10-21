@@ -1,0 +1,19 @@
+{
+  "name": "@dalan/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cau hinh TypeScript va ESLint dung chung",
+  "type": "module",
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tsconfig.node.json": "./tsconfig.node.json",
+    "./tsconfig.nest.json": "./tsconfig.nest.json",
+    "./tsconfig.next.json": "./tsconfig.next.json",
+    "./eslint": "./eslint.base.js"
+  },
+  "devDependencies": {
+    "eslint": "catalog:",
+    "typescript-eslint": "catalog:",
+    "eslint-config-prettier": "catalog:"
+  }
+}

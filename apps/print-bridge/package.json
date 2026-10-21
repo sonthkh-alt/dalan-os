@@ -1,0 +1,33 @@
+{
+  "name": "@dalan/print-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cau in tai co so: nhan lenh in tu API, render ESC/POS tieng Viet, dieu khien may in LAN/USB, hang doi offline",
+  "type": "module",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@dalan/contracts": "workspace:*",
+    "@dalan/domain": "workspace:*",
+    "@napi-rs/canvas": "catalog:",
+    "qrcode": "catalog:",
+    "dotenv": "catalog:",
+    "socket.io-client": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@dalan/config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

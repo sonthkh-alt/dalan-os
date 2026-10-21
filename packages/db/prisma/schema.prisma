@@ -1,0 +1,2226 @@
+// DaLan OS - Prisma schema
+// Quy ước: id UUID v7; tiền tệ BigInt (đồng); phần trăm là basis points (Int, 10% = 1000);
+// các cột *ById là id của Staff/Customer/GuestParticipant lưu dạng chuỗi để tránh quá nhiều quan hệ.
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../generated/prisma"
+  runtime                = "nodejs"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────────── A. Tổ chức, cơ sở, nhân sự ─────────────────────────────
+
+model Organization {
+  id        String   @id @default(uuid(7))
+  code      String   @unique
+  name      String
+  legalName String?
+  taxCode   String?
+  address   String?
+  phone     String?
+  email     String?
+  logoUrl   String?
+  settings  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branches           Branch[]
+  staff              Staff[]
+  roles              Role[]
+  menus              Menu[]
+  menuItems          MenuItem[]
+  modifierGroups     ModifierGroup[]
+  customers          Customer[]
+  loyaltyTiers       LoyaltyTier[]
+  promotions         Promotion[]
+  vouchers           Voucher[]
+  campaigns          Campaign[]
+  stockItems         StockItem[]
+  suppliers          Supplier[]
+  eventServiceCatalog EventServiceCatalog[]
+}
+
+enum RoundingMode {
+  NONE
+  TO_500
+  TO_1000
+}
+
+enum QrOrderMode {
+  DIRECT
+  STAFF_CONFIRM
+}
+
+enum GuestJoinMode {
+  OPEN
+  PIN
+  STAFF
+}
+
+model Branch {
+  id                   String        @id @default(uuid(7))
+  orgId                String
+  code                 String
+  name                 String
+  address              String?
+  phone                String?
+  email                String?
+  taxCode              String?
+  timezone             String        @default("Asia/Ho_Chi_Minh")
+  businessDayCutoff    String        @default("04:00")
+  vatRateBps           Int           @default(800)
+  priceIncludesVat     Boolean       @default(true)
+  serviceChargeBps     Int           @default(0)
+  rounding             RoundingMode  @default(NONE)
+  qrOrderMode          QrOrderMode   @default(STAFF_CONFIRM)
+  guestJoinMode        GuestJoinMode @default(OPEN)
+  defaultDiningMinutes Int           @default(90)
+  bankBin              String?
+  bankAccountNo        String?
+  bankAccountName      String?
+  receiptHeader        String?
+  receiptFooter        String?
+  openingHours         Json          @default("{}")
+  settings             Json          @default("{}")
+  isActive             Boolean       @default(true)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  org              Organization        @relation(fields: [orgId], references: [id])
+  areas            Area[]
+  tables           DiningTable[]
+  stations         Station[]
+  staffBranches    StaffBranch[]
+  devices          Device[]
+  shifts           Shift[]
+  itemOverrides    BranchItemOverride[]
+  menuBranches     MenuBranch[]
+  sessions         TableSession[]
+  orders           Order[]
+  orderLines       OrderLine[]
+  tickets          KitchenTicket[]
+  bills            Bill[]
+  payments         Payment[]
+  paymentIntents   PaymentIntent[]
+  eInvoices        EInvoice[]
+  reservations     Reservation[]
+  feedback         Feedback[]
+  halls            Hall[]
+  eventBookings    EventBooking[]
+  warehouses       Warehouse[]
+  purchaseOrders   PurchaseOrder[]
+  goodsReceipts    GoodsReceipt[]
+  printers         Printer[]
+  printJobs        PrintJob[]
+  serviceRequests  ServiceRequest[]
+  integrationConfigs IntegrationConfig[]
+  salesSummaries   DailySalesSummary[]
+
+  @@unique([orgId, code])
+}
+
+enum AreaKind {
+  HALL
+  VIP_ROOM
+  OUTDOOR
+  BAR
+  TAKEAWAY
+  VIRTUAL
+}
+
+model Area {
+  id               String   @id @default(uuid(7))
+  branchId         String
+  code             String
+  name             String
+  kind             AreaKind @default(HALL)
+  floor            Int?
+  sortOrder        Int      @default(0)
+  serviceChargeBps Int?
+  minSpend         BigInt?
+  layout           Json     @default("{}")
+  isActive         Boolean  @default(true)
+
+  branch       Branch        @relation(fields: [branchId], references: [id])
+  tables       DiningTable[]
+  reservations Reservation[]
+
+  @@unique([branchId, code])
+}
+
+enum TableShape {
+  ROUND
+  RECT
+  SQUARE
+  BAR
+}
+
+model DiningTable {
+  id            String     @id @default(uuid(7))
+  branchId      String
+  areaId        String
+  code          String
+  name          String
+  minSeats      Int        @default(1)
+  maxSeats      Int        @default(4)
+  shape         TableShape @default(ROUND)
+  posX          Int        @default(0)
+  posY          Int        @default(0)
+  width         Int        @default(100)
+  height        Int        @default(100)
+  rotation      Int        @default(0)
+  isPrivateRoom Boolean    @default(false)
+  minSpend      BigInt?
+  qrToken       String     @unique
+  sortOrder     Int        @default(0)
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  branch          Branch           @relation(fields: [branchId], references: [id])
+  area            Area             @relation(fields: [areaId], references: [id])
+  sessionTables   SessionTable[]
+  serviceRequests ServiceRequest[]
+
+  @@unique([branchId, code])
+}
+
+model Role {
+  id          String   @id @default(uuid(7))
+  orgId       String
+  code        String
+  name        String
+  permissions String[] @default([])
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  org   Organization @relation(fields: [orgId], references: [id])
+  staff Staff[]
+
+  @@unique([orgId, code])
+}
+
+model Staff {
+  id                String    @id @default(uuid(7))
+  orgId             String
+  roleId            String
+  code              String
+  fullName          String
+  phone             String?
+  email             String?
+  passwordHash      String?
+  pinHash           String?
+  avatarUrl         String?
+  isActive          Boolean   @default(true)
+  failedPinAttempts Int       @default(0)
+  lockedUntil       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org           Organization   @relation(fields: [orgId], references: [id])
+  role          Role           @relation(fields: [roleId], references: [id])
+  branches      StaffBranch[]
+  refreshTokens RefreshToken[]
+
+  @@unique([orgId, code])
+}
+
+model StaffBranch {
+  staffId   String
+  branchId  String
+  isDefault Boolean @default(false)
+
+  staff  Staff  @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@id([staffId, branchId])
+}
+
+enum DeviceKind {
+  POS
+  TABLET
+  KDS
+  PRINT_BRIDGE
+  CUSTOMER_DISPLAY
+}
+
+model Device {
+  id               String     @id @default(uuid(7))
+  branchId         String
+  name             String
+  kind             DeviceKind
+  tokenHash        String     @unique
+  defaultStationId String?
+  registeredById   String?
+  lastSeenAt       DateTime?
+  isActive         Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+
+  branch        Branch         @relation(fields: [branchId], references: [id])
+  refreshTokens RefreshToken[]
+  shifts        Shift[]
+}
+
+model RefreshToken {
+  id           String    @id @default(uuid(7))
+  staffId      String?
+  customerId   String?
+  deviceId     String?
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  createdAt    DateTime  @default(now())
+
+  staff    Staff?    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  device   Device?   @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([staffId])
+  @@index([customerId])
+}
+
+enum ShiftStatus {
+  OPEN
+  CLOSED
+}
+
+model Shift {
+  id                 String      @id @default(uuid(7))
+  branchId           String
+  deviceId           String?
+  openedById         String
+  closedById         String?
+  openedAt           DateTime    @default(now())
+  closedAt           DateTime?
+  openingCash        BigInt      @default(0)
+  expectedCash       BigInt?
+  closingCashCounted BigInt?
+  variance           BigInt?
+  notes              String?
+  status             ShiftStatus @default(OPEN)
+
+  branch        Branch         @relation(fields: [branchId], references: [id])
+  device        Device?        @relation(fields: [deviceId], references: [id])
+  cashMovements CashMovement[]
+  bills         Bill[]
+  payments      Payment[]
+
+  @@index([branchId, status])
+}
+
+enum CashMovementKind {
+  IN
+  OUT
+}
+
+model CashMovement {
+  id            String           @id @default(uuid(7))
+  shiftId       String
+  kind          CashMovementKind
+  amount        BigInt
+  reason        String
+  note          String?
+  attachmentUrl String?
+  createdById   String
+  createdAt     DateTime         @default(now())
+
+  shift Shift @relation(fields: [shiftId], references: [id])
+}
+
+// ───────────────────────────── B. Thực đơn ─────────────────────────────
+
+enum StationMode {
+  KDS
+  PRINTER
+  BOTH
+}
+
+model Station {
+  id        String      @id @default(uuid(7))
+  branchId  String
+  code      String
+  name      String
+  mode      StationMode @default(BOTH)
+  printerId String?
+  color     String?
+  sortOrder Int         @default(0)
+  isActive  Boolean     @default(true)
+
+  branch  Branch          @relation(fields: [branchId], references: [id])
+  printer Printer?        @relation(fields: [printerId], references: [id])
+  tickets KitchenTicket[]
+
+  @@unique([branchId, code])
+}
+
+enum MenuKind {
+  ALACARTE
+  BREAKFAST
+  LUNCH
+  SET
+  BANQUET
+  DRINKS
+  VEGETARIAN
+  OTHER
+}
+
+model Menu {
+  id        String   @id @default(uuid(7))
+  orgId     String
+  code      String
+  name      String
+  nameEn    String?
+  kind      MenuKind @default(ALACARTE)
+  // Lịch bán: { days: [1..7], from: "06:00", to: "10:00" } hoặc {} nếu luôn bán
+  schedule  Json     @default("{}")
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  org        Organization   @relation(fields: [orgId], references: [id])
+  categories MenuCategory[]
+  branches   MenuBranch[]
+
+  @@unique([orgId, code])
+}
+
+model MenuBranch {
+  menuId   String
+  branchId String
+
+  menu   Menu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@id([menuId, branchId])
+}
+
+model MenuCategory {
+  id                 String   @id @default(uuid(7))
+  menuId             String
+  code               String
+  name               String
+  nameEn             String?
+  imageUrl           String?
+  defaultStationCode String?
+  schedule           Json     @default("{}")
+  sortOrder          Int      @default(0)
+  isActive           Boolean  @default(true)
+
+  menu  Menu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  items MenuItem[]
+
+  @@unique([menuId, code])
+}
+
+enum PricingMode {
+  FIXED
+  VARIANT
+  WEIGHT
+  MARKET
+  OPEN
+}
+
+enum MenuItemStatus {
+  ACTIVE
+  HIDDEN
+  DISCONTINUED
+}
+
+model MenuItem {
+  id                 String         @id @default(uuid(7))
+  orgId              String
+  categoryId         String
+  code               String
+  name               String
+  nameEn             String?
+  description        String?
+  descriptionEn      String?
+  unit               String         @default("phần")
+  pricingMode        PricingMode    @default(FIXED)
+  basePrice          BigInt?
+  vatRateBps         Int?
+  defaultStationCode String?
+  imageUrl           String?
+  isVegetarian       Boolean        @default(false)
+  isSignature        Boolean        @default(false)
+  isSpicy            Boolean        @default(false)
+  isCombo            Boolean        @default(false)
+  countEmpties       Boolean        @default(false)
+  ownBrand           Boolean        @default(false)
+  prepMinutes        Int?
+  tags               String[]       @default([])
+  allergens          String[]       @default([])
+  sortOrder          Int            @default(0)
+  status             MenuItemStatus @default(ACTIVE)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  org             Organization            @relation(fields: [orgId], references: [id])
+  category        MenuCategory            @relation(fields: [categoryId], references: [id])
+  variants        MenuItemVariant[]
+  modifierGroups  MenuItemModifierGroup[]
+  comboComponents ComboComponent[]        @relation("ComboParent")
+  overrides       BranchItemOverride[]
+  priceHistory    PriceHistory[]
+  recipes         Recipe[]
+  orderLines      OrderLine[]
+  eventMenuLines  EventMenuLine[]
+
+  @@unique([orgId, code])
+  @@index([categoryId])
+}
+
+model MenuItemVariant {
+  id        String  @id @default(uuid(7))
+  itemId    String
+  code      String
+  name      String
+  nameEn    String?
+  price     BigInt
+  sortOrder Int     @default(0)
+  isDefault Boolean @default(false)
+  isActive  Boolean @default(true)
+
+  item       MenuItem    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  orderLines OrderLine[]
+
+  @@unique([itemId, code])
+}
+
+model ModifierGroup {
+  id         String  @id @default(uuid(7))
+  orgId      String
+  code       String
+  name       String
+  nameEn     String?
+  minSelect  Int     @default(0)
+  maxSelect  Int     @default(1)
+  isRequired Boolean @default(false)
+  sortOrder  Int     @default(0)
+
+  org     Organization            @relation(fields: [orgId], references: [id])
+  options ModifierOption[]
+  items   MenuItemModifierGroup[]
+
+  @@unique([orgId, code])
+}
+
+model ModifierOption {
+  id         String  @id @default(uuid(7))
+  groupId    String
+  code       String
+  name       String
+  nameEn     String?
+  priceDelta BigInt  @default(0)
+  sortOrder  Int     @default(0)
+  isDefault  Boolean @default(false)
+  isActive   Boolean @default(true)
+
+  group ModifierGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, code])
+}
+
+model MenuItemModifierGroup {
+  itemId    String
+  groupId   String
+  sortOrder Int    @default(0)
+
+  item  MenuItem      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  group ModifierGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([itemId, groupId])
+}
+
+enum ComboComponentKind {
+  FIXED
+  CHOICE
+}
+
+model ComboComponent {
+  id            String             @id @default(uuid(7))
+  comboId       String
+  name          String
+  kind          ComboComponentKind @default(FIXED)
+  quantity      Decimal            @default(1) @db.Decimal(10, 3)
+  defaultItemId String?
+  choiceItemIds String[]           @default([])
+  sortOrder     Int                @default(0)
+
+  combo MenuItem @relation("ComboParent", fields: [comboId], references: [id], onDelete: Cascade)
+}
+
+model BranchItemOverride {
+  id           String    @id @default(uuid(7))
+  branchId     String
+  itemId       String
+  price        BigInt?
+  stationCode  String?
+  isAvailable  Boolean   @default(true)
+  soldOutUntil DateTime?
+  stockLimit   Int?
+  stockLeft    Int?
+  updatedAt    DateTime  @updatedAt
+
+  branch Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  item   MenuItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, itemId])
+}
+
+model PriceHistory {
+  id          String   @id @default(uuid(7))
+  itemId      String
+  variantId   String?
+  branchId    String?
+  oldPrice    BigInt?
+  newPrice    BigInt?
+  reason      String?
+  changedById String?
+  changedAt   DateTime @default(now())
+
+  item MenuItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId, changedAt])
+}
+
+// ───────────────────────────── C. Phiên bàn, đơn, dòng món ─────────────────────────────
+
+enum SessionStatus {
+  PENDING
+  OPEN
+  BILL_REQUESTED
+  CLOSED
+  CANCELLED
+}
+
+enum SessionSource {
+  WALK_IN
+  RESERVATION
+  QR
+  EVENT
+  TAKEAWAY
+  DELIVERY
+}
+
+model TableSession {
+  id             String        @id @default(uuid(7))
+  branchId       String
+  code           String
+  status         SessionStatus @default(OPEN)
+  source         SessionSource @default(WALK_IN)
+  guestCount     Int           @default(0)
+  businessDate   DateTime      @db.Date
+  openedAt       DateTime      @default(now())
+  closedAt       DateTime?
+  openedById     String?
+  serverId       String?
+  customerId     String?
+  reservationId  String?       @unique
+  eventBookingId String?
+  joinPin        String?
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  branch       Branch             @relation(fields: [branchId], references: [id])
+  customer     Customer?          @relation(fields: [customerId], references: [id])
+  reservation  Reservation?       @relation(fields: [reservationId], references: [id])
+  tables       SessionTable[]
+  participants GuestParticipant[]
+  orders       Order[]
+  orderLines   OrderLine[]
+  bills        Bill[]
+  requests     ServiceRequest[]
+  tickets      KitchenTicket[]
+  feedback     Feedback[]
+
+  @@unique([branchId, code])
+  @@index([branchId, status])
+  @@index([branchId, businessDate])
+}
+
+model SessionTable {
+  sessionId  String
+  tableId    String
+  assignedAt DateTime  @default(now())
+  releasedAt DateTime?
+
+  session TableSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  table   DiningTable  @relation(fields: [tableId], references: [id])
+
+  @@id([sessionId, tableId])
+  @@index([tableId, releasedAt])
+}
+
+model GuestParticipant {
+  id                String   @id @default(uuid(7))
+  sessionId         String
+  nickname          String?
+  customerId        String?
+  deviceFingerprint String?
+  locale            String   @default("vi")
+  isHost            Boolean  @default(false)
+  joinedAt          DateTime @default(now())
+
+  session  TableSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  customer Customer?    @relation(fields: [customerId], references: [id])
+}
+
+enum OrderSource {
+  STAFF
+  GUEST
+  PREORDER
+  SYSTEM
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING_CONFIRM
+  SENT
+  CANCELLED
+}
+
+model Order {
+  id                    String      @id @default(uuid(7))
+  sessionId             String
+  branchId              String
+  seq                   Int
+  source                OrderSource @default(STAFF)
+  status                OrderStatus @default(DRAFT)
+  placedById            String?
+  placedByParticipantId String?
+  confirmedById         String?
+  notes                 String?
+  idempotencyKey        String?     @unique
+  sentAt                DateTime?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  session TableSession    @relation(fields: [sessionId], references: [id])
+  branch  Branch          @relation(fields: [branchId], references: [id])
+  lines   OrderLine[]
+  tickets KitchenTicket[]
+
+  @@unique([sessionId, seq])
+  @@index([branchId, status])
+}
+
+enum OrderLineStatus {
+  DRAFT
+  SENT
+  HOLD
+  PREPARING
+  READY
+  SERVED
+  VOIDED
+  CANCELLED
+}
+
+model OrderLine {
+  id                String          @id @default(uuid(7))
+  orderId           String
+  sessionId         String
+  branchId          String
+  itemId            String?
+  variantId         String?
+  nameSnapshot      String
+  nameEnSnapshot    String?
+  unitSnapshot      String
+  unitPrice         BigInt
+  quantity          Decimal         @db.Decimal(10, 3)
+  expectedWeightKg  Decimal?        @db.Decimal(10, 3)
+  weightKg          Decimal?        @db.Decimal(10, 3)
+  modifiersSnapshot Json            @default("[]")
+  modifiersTotal    BigInt          @default(0)
+  lineTotal         BigInt
+  vatRateBps        Int
+  stationCode       String?
+  course            Int             @default(1)
+  status            OrderLineStatus @default(DRAFT)
+  note              String?
+  participantId     String?
+  seatNo            Int?
+  isCountedEmpties  Boolean         @default(false)
+  isAdjustment      Boolean         @default(false)
+  sentAt            DateTime?
+  readyAt           DateTime?
+  servedAt          DateTime?
+  voidedAt          DateTime?
+  voidReason        String?
+  voidedById        String?
+  voidApprovedById  String?
+  wasteOnVoid       Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  order       Order              @relation(fields: [orderId], references: [id])
+  session     TableSession       @relation(fields: [sessionId], references: [id])
+  branch      Branch             @relation(fields: [branchId], references: [id])
+  item        MenuItem?          @relation(fields: [itemId], references: [id])
+  variant     MenuItemVariant?   @relation(fields: [variantId], references: [id])
+  ticketLines KitchenTicketLine[]
+  billLines   BillLine[]
+
+  @@index([sessionId, status])
+  @@index([branchId, status])
+}
+
+enum ServiceRequestKind {
+  CALL_STAFF
+  WATER
+  UTENSILS
+  BILL
+  OTHER
+}
+
+enum ServiceRequestStatus {
+  OPEN
+  ACKED
+  DONE
+}
+
+model ServiceRequest {
+  id            String               @id @default(uuid(7))
+  sessionId     String
+  branchId      String
+  tableId       String?
+  participantId String?
+  kind          ServiceRequestKind
+  note          String?
+  status        ServiceRequestStatus @default(OPEN)
+  ackedById     String?
+  ackedAt       DateTime?
+  doneAt        DateTime?
+  createdAt     DateTime             @default(now())
+
+  session TableSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  branch  Branch       @relation(fields: [branchId], references: [id])
+  table   DiningTable? @relation(fields: [tableId], references: [id])
+
+  @@index([branchId, status])
+}
+
+// ───────────────────────────── D. Bếp ─────────────────────────────
+
+enum TicketStatus {
+  NEW
+  IN_PROGRESS
+  DONE
+  RECALLED
+  VOIDED
+}
+
+model KitchenTicket {
+  id          String       @id @default(uuid(7))
+  branchId    String
+  orderId     String
+  sessionId   String
+  stationId   String
+  stationCode String
+  seq         Int
+  course      Int          @default(1)
+  priority    Int          @default(0)
+  status      TicketStatus @default(NEW)
+  firedAt     DateTime     @default(now())
+  startedAt   DateTime?
+  bumpedAt    DateTime?
+  printedAt   DateTime?
+  printJobId  String?
+
+  branch  Branch              @relation(fields: [branchId], references: [id])
+  order   Order               @relation(fields: [orderId], references: [id])
+  session TableSession        @relation(fields: [sessionId], references: [id])
+  station Station             @relation(fields: [stationId], references: [id])
+  lines   KitchenTicketLine[]
+
+  @@index([branchId, stationId, status])
+}
+
+enum TicketLineStatus {
+  NEW
+  IN_PROGRESS
+  DONE
+  VOIDED
+}
+
+model KitchenTicketLine {
+  id          String           @id @default(uuid(7))
+  ticketId    String
+  orderLineId String
+  quantity    Decimal          @db.Decimal(10, 3)
+  status      TicketLineStatus @default(NEW)
+  startedAt   DateTime?
+  doneAt      DateTime?
+
+  ticket    KitchenTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  orderLine OrderLine     @relation(fields: [orderLineId], references: [id])
+
+  @@index([orderLineId])
+}
+
+// ───────────────────────────── E. Bill và thanh toán ─────────────────────────────
+
+enum BillStatus {
+  OPEN
+  PARTIALLY_PAID
+  PAID
+  VOID
+}
+
+enum SplitType {
+  NONE
+  BY_ITEM
+  BY_PARTICIPANT
+  EQUAL
+  AMOUNT
+}
+
+model Bill {
+  id                  String     @id @default(uuid(7))
+  sessionId           String
+  branchId            String
+  shiftId             String?
+  code                String
+  status              BillStatus @default(OPEN)
+  splitType           SplitType  @default(NONE)
+  subtotal            BigInt     @default(0)
+  lineDiscountTotal   BigInt     @default(0)
+  billDiscountTotal   BigInt     @default(0)
+  promotionTotal      BigInt     @default(0)
+  serviceChargeBps    Int        @default(0)
+  serviceChargeAmount BigInt     @default(0)
+  vatAmount           BigInt     @default(0)
+  taxBreakdown        Json       @default("[]")
+  roundingAdjustment  BigInt     @default(0)
+  total               BigInt     @default(0)
+  paidTotal           BigInt     @default(0)
+  changeGiven         BigInt     @default(0)
+  printedCount        Int        @default(0)
+  customerId          String?
+  taxInvoiceInfo      Json?
+  notes               String?
+  closedAt            DateTime?
+  closedById          String?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  session   TableSession   @relation(fields: [sessionId], references: [id])
+  branch    Branch         @relation(fields: [branchId], references: [id])
+  shift     Shift?         @relation(fields: [shiftId], references: [id])
+  customer  Customer?      @relation(fields: [customerId], references: [id])
+  lines     BillLine[]
+  discounts BillDiscount[]
+  payments  Payment[]
+  eInvoice  EInvoice?
+  pointsTx  PointsTransaction[]
+  feedback  Feedback[]
+
+  @@unique([branchId, code])
+  @@index([branchId, status])
+}
+
+model BillLine {
+  id             String  @id @default(uuid(7))
+  billId         String
+  orderLineId    String
+  quantityShare  Decimal @default(1) @db.Decimal(10, 6)
+  amount         BigInt
+  discountAmount BigInt  @default(0)
+  vatRateBps     Int
+  vatAmount      BigInt  @default(0)
+
+  bill      Bill      @relation(fields: [billId], references: [id], onDelete: Cascade)
+  orderLine OrderLine @relation(fields: [orderLineId], references: [id])
+
+  @@index([orderLineId])
+}
+
+enum DiscountKind {
+  PERCENT
+  AMOUNT
+  VOUCHER
+  POINTS
+  PROMOTION
+  GOODWILL
+}
+
+model BillDiscount {
+  id           String       @id @default(uuid(7))
+  billId       String
+  kind         DiscountKind
+  valueBps     Int?
+  amount       BigInt
+  reason       String?
+  voucherId    String?
+  promotionId  String?
+  appliedById  String?
+  approvedById String?
+  createdAt    DateTime     @default(now())
+
+  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CARD_TERMINAL
+  VNPAY
+  MOMO
+  ZALOPAY
+  APPLE_PAY
+  GOOGLE_PAY
+  VOUCHER
+  POINTS
+  DEPOSIT
+  CREDIT
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  CANCELLED
+}
+
+model Payment {
+  id              String        @id @default(uuid(7))
+  billId          String
+  branchId        String
+  shiftId         String?
+  intentId        String?       @unique
+  method          PaymentMethod
+  provider        String?
+  subMethod       String?
+  amount          BigInt
+  tenderedAmount  BigInt?
+  changeAmount    BigInt        @default(0)
+  status          PaymentStatus @default(PENDING)
+  externalRef     String?
+  qrPayload       String?
+  cardLast4       String?
+  approvalCode    String?
+  providerPayload Json?
+  paidAt          DateTime?
+  confirmedById   String?
+  note            String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  bill    Bill           @relation(fields: [billId], references: [id])
+  branch  Branch         @relation(fields: [branchId], references: [id])
+  shift   Shift?         @relation(fields: [shiftId], references: [id])
+  intent  PaymentIntent? @relation(fields: [intentId], references: [id])
+  refunds Refund[]
+
+  @@index([billId])
+  @@index([branchId, status, createdAt])
+  @@index([externalRef])
+}
+
+enum IntentStatus {
+  CREATED
+  PENDING
+  SUCCEEDED
+  FAILED
+  EXPIRED
+  CANCELLED
+}
+
+model PaymentIntent {
+  id               String        @id @default(uuid(7))
+  branchId         String
+  billId           String?
+  reservationId    String?
+  eventPaymentId   String?
+  provider         String
+  method           PaymentMethod
+  amount           BigInt
+  currency         String        @default("VND")
+  status           IntentStatus  @default(CREATED)
+  providerIntentId String?
+  redirectUrl      String?
+  qrCode           String?
+  deeplink         String?
+  expiresAt        DateTime?
+  webhookPayload   Json?
+  idempotencyKey   String?       @unique
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  branch  Branch   @relation(fields: [branchId], references: [id])
+  payment Payment?
+
+  @@index([providerIntentId])
+  @@index([billId])
+}
+
+model Refund {
+  id           String        @id @default(uuid(7))
+  paymentId    String
+  amount       BigInt
+  reason       String
+  status       PaymentStatus @default(PENDING)
+  externalRef  String?
+  createdById  String?
+  approvedById String?
+  createdAt    DateTime      @default(now())
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+}
+
+model Promotion {
+  id        String   @id @default(uuid(7))
+  orgId     String
+  code      String
+  name      String
+  kind      String
+  rules     Json
+  branchIds String[] @default([])
+  startsAt  DateTime?
+  endsAt    DateTime?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  org Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([orgId, code])
+}
+
+enum VoucherKind {
+  PERCENT
+  AMOUNT
+  ITEM
+}
+
+enum VoucherStatus {
+  ACTIVE
+  USED
+  EXPIRED
+  REVOKED
+}
+
+model Voucher {
+  id          String        @id @default(uuid(7))
+  orgId       String
+  code        String        @unique
+  campaignId  String?
+  customerId  String?
+  kind        VoucherKind
+  value       BigInt
+  minBill     BigInt?
+  maxDiscount BigInt?
+  branchIds   String[]      @default([])
+  validFrom   DateTime?
+  validTo     DateTime?
+  usageLimit  Int           @default(1)
+  usedCount   Int           @default(0)
+  status      VoucherStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+
+  org      Organization @relation(fields: [orgId], references: [id])
+  customer Customer?    @relation(fields: [customerId], references: [id])
+  campaign Campaign?    @relation(fields: [campaignId], references: [id])
+
+  @@index([customerId])
+}
+
+// ───────────────────────────── F. Hóa đơn điện tử ─────────────────────────────
+
+enum EInvoiceProvider {
+  MISA
+  VIETTEL
+  VNPT
+  MOCK
+}
+
+enum EInvoiceStatus {
+  DRAFT
+  QUEUED
+  ISSUED
+  FAILED
+  CANCELLED
+  REPLACED
+  ADJUSTED
+}
+
+model EInvoice {
+  id               String           @id @default(uuid(7))
+  branchId         String
+  billId           String?          @unique
+  eventBookingId   String?
+  provider         EInvoiceProvider
+  status           EInvoiceStatus   @default(DRAFT)
+  templateCode     String?
+  serial           String?
+  invoiceNo        String?
+  taxAuthorityCode String?
+  buyerName        String?
+  buyerTaxCode     String?
+  buyerAddress     String?
+  buyerEmail       String?
+  buyerPhone       String?
+  totalBeforeVat   BigInt
+  vatAmount        BigInt
+  total            BigInt
+  lookupUrl        String?
+  lookupCode       String?
+  pdfUrl           String?
+  xmlUrl           String?
+  providerPayload  Json?
+  errorMessage     String?
+  attempts         Int              @default(0)
+  replacesId       String?
+  adjustsId        String?
+  issuedAt         DateTime?
+  createdById      String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  branch Branch        @relation(fields: [branchId], references: [id])
+  bill   Bill?         @relation(fields: [billId], references: [id])
+  event  EventBooking? @relation(fields: [eventBookingId], references: [id])
+
+  @@index([branchId, status])
+}
+
+// ───────────────────────────── H. Đặt bàn ─────────────────────────────
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  SEATED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  WAITLIST
+}
+
+enum ReservationSource {
+  WEB
+  ZALO
+  MINI_APP
+  PHONE
+  WALK_IN
+  STAFF
+}
+
+enum DepositStatus {
+  NOT_REQUIRED
+  PENDING
+  PAID
+  REFUNDED
+  FORFEITED
+}
+
+model Reservation {
+  id               String            @id @default(uuid(7))
+  branchId         String
+  code             String
+  customerId       String?
+  customerName     String
+  customerPhone    String
+  partySize        Int
+  reservedAt       DateTime
+  durationMinutes  Int               @default(90)
+  areaId           String?
+  tableIds         String[]          @default([])
+  status           ReservationStatus @default(PENDING)
+  source           ReservationSource @default(WEB)
+  occasion         String?
+  specialRequests  String?
+  depositRequired  BigInt?
+  depositPaid      BigInt            @default(0)
+  depositStatus    DepositStatus     @default(NOT_REQUIRED)
+  preorderLines    Json?
+  notes            String?
+  waitlistPosition Int?
+  remindersSent    Json              @default("[]")
+  confirmedAt      DateTime?
+  seatedAt         DateTime?
+  cancelledAt      DateTime?
+  cancelReason     String?
+  createdById      String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  branch   Branch        @relation(fields: [branchId], references: [id])
+  customer Customer?     @relation(fields: [customerId], references: [id])
+  area     Area?         @relation(fields: [areaId], references: [id])
+  session  TableSession?
+
+  @@unique([branchId, code])
+  @@index([branchId, reservedAt])
+  @@index([customerPhone])
+}
+
+// ───────────────────────────── I. Khách hàng, tích điểm, thông báo ─────────────────────────────
+
+model Customer {
+  id               String    @id @default(uuid(7))
+  orgId            String
+  phone            String
+  fullName         String?
+  email            String?
+  birthday         DateTime? @db.Date
+  gender           String?
+  zaloUserId       String?
+  avatarUrl        String?
+  companyName      String?
+  taxCode          String?
+  companyAddress   String?
+  tags             String[]  @default([])
+  notes            String?
+  allergies        String?
+  preferences      String?
+  marketingConsent Boolean   @default(false)
+  consentAt        DateTime?
+  tierId           String?
+  pointsBalance    Int       @default(0)
+  lifetimeSpend    BigInt    @default(0)
+  visitCount       Int       @default(0)
+  firstVisitAt     DateTime?
+  lastVisitAt      DateTime?
+  source           String?
+  isAnonymized     Boolean   @default(false)
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  org           Organization        @relation(fields: [orgId], references: [id])
+  tier          LoyaltyTier?        @relation(fields: [tierId], references: [id])
+  sessions      TableSession[]
+  participants  GuestParticipant[]
+  bills         Bill[]
+  reservations  Reservation[]
+  vouchers      Voucher[]
+  pointsTx      PointsTransaction[]
+  feedback      Feedback[]
+  refreshTokens RefreshToken[]
+  eventBookings EventBooking[]
+  notifications NotificationLog[]
+
+  @@unique([orgId, phone])
+  @@index([zaloUserId])
+}
+
+model LoyaltyTier {
+  id                String   @id @default(uuid(7))
+  orgId             String
+  code              String
+  name              String
+  minSpend12m       BigInt   @default(0)
+  earnMultiplierBps Int      @default(10000)
+  benefits          Json     @default("{}")
+  sortOrder         Int      @default(0)
+
+  org       Organization @relation(fields: [orgId], references: [id])
+  customers Customer[]
+
+  @@unique([orgId, code])
+}
+
+enum PointsTxKind {
+  EARN
+  REDEEM
+  ADJUST
+  EXPIRE
+  REVERSE
+}
+
+model PointsTransaction {
+  id           String       @id @default(uuid(7))
+  customerId   String
+  kind         PointsTxKind
+  points       Int
+  balanceAfter Int
+  billId       String?
+  reason       String?
+  expiresAt    DateTime?
+  createdById  String?
+  createdAt    DateTime     @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  bill     Bill?    @relation(fields: [billId], references: [id])
+
+  @@index([customerId, createdAt])
+}
+
+model Feedback {
+  id            String    @id @default(uuid(7))
+  branchId      String
+  sessionId     String?
+  billId        String?
+  customerId    String?
+  participantId String?
+  rating        Int
+  comment       String?
+  likedItemIds  String[]  @default([])
+  tags          String[]  @default([])
+  response      String?
+  handledById   String?
+  handledAt     DateTime?
+  createdAt     DateTime  @default(now())
+
+  branch   Branch        @relation(fields: [branchId], references: [id])
+  session  TableSession? @relation(fields: [sessionId], references: [id])
+  bill     Bill?         @relation(fields: [billId], references: [id])
+  customer Customer?     @relation(fields: [customerId], references: [id])
+
+  @@index([branchId, createdAt])
+}
+
+model OtpCode {
+  id         String    @id @default(uuid(7))
+  phone      String
+  codeHash   String
+  purpose    String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([phone, purpose])
+}
+
+enum NotificationChannel {
+  ZNS
+  SMS
+  EMAIL
+  PUSH
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  FAILED
+}
+
+model NotificationLog {
+  id            String              @id @default(uuid(7))
+  channel       NotificationChannel
+  templateCode  String
+  recipient     String
+  customerId    String?
+  payload       Json
+  status        NotificationStatus  @default(QUEUED)
+  providerMsgId String?
+  error         String?
+  refType       String?
+  refId         String?
+  sentAt        DateTime?
+  createdAt     DateTime            @default(now())
+
+  customer Customer? @relation(fields: [customerId], references: [id])
+
+  @@index([refType, refId])
+}
+
+enum CampaignKind {
+  BIRTHDAY
+  WINBACK
+  WELCOME
+  REVIEW
+  CUSTOM
+}
+
+model Campaign {
+  id              String       @id @default(uuid(7))
+  orgId           String
+  code            String
+  name            String
+  kind            CampaignKind
+  rules           Json         @default("{}")
+  templateCode    String?
+  voucherTemplate Json?
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+
+  org      Organization @relation(fields: [orgId], references: [id])
+  vouchers Voucher[]
+
+  @@unique([orgId, code])
+}
+
+// ───────────────────────────── J. Tiệc và sự kiện ─────────────────────────────
+
+model Hall {
+  id               String  @id @default(uuid(7))
+  branchId         String
+  code             String
+  name             String
+  // { round10: 110, round6: 150, theater: 800, standing: 1000 }
+  capacityByLayout Json    @default("{}")
+  turnoverMinutes  Int     @default(120)
+  rentalFee        BigInt?
+  fixedEquipment   String?
+  isActive         Boolean @default(true)
+
+  branch Branch      @relation(fields: [branchId], references: [id])
+  events EventHall[]
+
+  @@unique([branchId, code])
+}
+
+enum EventKind {
+  WEDDING
+  ENGAGEMENT
+  CONFERENCE
+  GALA
+  OPENING
+  ANNIVERSARY
+  BIRTHDAY
+  REUNION
+  PARTY
+  OTHER
+}
+
+enum EventStatus {
+  LEAD
+  QUOTED
+  CONTRACTED
+  CONFIRMED
+  BEO_ISSUED
+  IN_PROGRESS
+  SETTLED
+  CLOSED
+  CANCELLED
+}
+
+enum BeveragePolicy {
+  PACKAGE
+  ACTUAL
+  BYO
+  MIXED
+}
+
+model EventBooking {
+  id               String         @id @default(uuid(7))
+  branchId         String
+  code             String
+  kind             EventKind
+  status           EventStatus    @default(LEAD)
+  customerId       String?
+  contactName      String
+  contactPhone     String
+  contactEmail     String?
+  companyName      String?
+  taxCode          String?
+  eventDate        DateTime       @db.Date
+  startTime        String
+  endTime          String
+  expectedTables   Int            @default(0)
+  confirmedTables  Int?
+  reserveTables    Int            @default(0)
+  guestsPerTable   Int            @default(10)
+  expectedGuests   Int?
+  beveragePolicy   BeveragePolicy @default(ACTUAL)
+  beverageNotes    String?
+  notes            String?
+  internalNotes    String?
+  ownerStaffId     String?
+  source           String?
+  holdExpiresAt    DateTime?
+  subtotalMenu     BigInt         @default(0)
+  subtotalServices BigInt         @default(0)
+  discountAmount   BigInt         @default(0)
+  serviceChargeBps Int            @default(0)
+  vatBps           Int            @default(800)
+  total            BigInt         @default(0)
+  depositTotal     BigInt         @default(0)
+  paidTotal        BigInt         @default(0)
+  settledTotal     BigInt?
+  timeline         Json           @default("[]")
+  cancelledAt      DateTime?
+  cancelReason     String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  branch      Branch                 @relation(fields: [branchId], references: [id])
+  customer    Customer?              @relation(fields: [customerId], references: [id])
+  halls       EventHall[]
+  quotes      EventQuote[]
+  menus       EventMenu[]
+  services    EventService[]
+  deposits    EventDepositSchedule[]
+  payments    EventPayment[]
+  beos        EventOrderSheet[]
+  adjustments EventAdjustment[]
+  eInvoices   EInvoice[]
+
+  @@unique([branchId, code])
+  @@index([branchId, eventDate])
+  @@index([branchId, status])
+}
+
+model EventHall {
+  eventId    String
+  hallId     String
+  layout     String  @default("round10")
+  setupNotes String?
+
+  event EventBooking @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  hall  Hall         @relation(fields: [hallId], references: [id])
+
+  @@id([eventId, hallId])
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  SUPERSEDED
+}
+
+model EventQuote {
+  id          String      @id @default(uuid(7))
+  eventId     String
+  version     Int
+  status      QuoteStatus @default(DRAFT)
+  payload     Json
+  total       BigInt
+  pdfUrl      String?
+  sentAt      DateTime?
+  createdById String?
+  createdAt   DateTime    @default(now())
+
+  event EventBooking @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, version])
+}
+
+model EventMenu {
+  id            String  @id @default(uuid(7))
+  eventId       String
+  name          String
+  pricePerTable BigInt
+  tables        Int
+  notes         String?
+  isFinal       Boolean @default(false)
+  sortOrder     Int     @default(0)
+
+  event EventBooking    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  lines EventMenuLine[]
+}
+
+model EventMenuLine {
+  id               String  @id @default(uuid(7))
+  eventMenuId      String
+  itemId           String?
+  nameSnapshot     String
+  quantityPerTable Decimal @default(1) @db.Decimal(10, 3)
+  unit             String?
+  note             String?
+  sortOrder        Int     @default(0)
+
+  eventMenu EventMenu @relation(fields: [eventMenuId], references: [id], onDelete: Cascade)
+  item      MenuItem? @relation(fields: [itemId], references: [id])
+}
+
+model EventServiceCatalog {
+  id          String  @id @default(uuid(7))
+  orgId       String
+  code        String
+  name        String
+  category    String
+  unit        String
+  price       BigInt
+  description String?
+  isActive    Boolean @default(true)
+
+  org      Organization   @relation(fields: [orgId], references: [id])
+  services EventService[]
+
+  @@unique([orgId, code])
+}
+
+model EventService {
+  id         String  @id @default(uuid(7))
+  eventId    String
+  catalogId  String?
+  name       String
+  unitPrice  BigInt
+  quantity   Decimal @default(1) @db.Decimal(10, 3)
+  total      BigInt
+  note       String?
+  isIncluded Boolean @default(false)
+  sortOrder  Int     @default(0)
+
+  event   EventBooking         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  catalog EventServiceCatalog? @relation(fields: [catalogId], references: [id])
+}
+
+enum DepositScheduleStatus {
+  DUE
+  PAID
+  OVERDUE
+  WAIVED
+}
+
+model EventDepositSchedule {
+  id         String                @id @default(uuid(7))
+  eventId    String
+  seq        Int
+  label      String
+  amount     BigInt
+  percentBps Int?
+  dueDate    DateTime              @db.Date
+  status     DepositScheduleStatus @default(DUE)
+  paidAt     DateTime?
+  paymentId  String?
+
+  event EventBooking @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, seq])
+}
+
+enum EventPaymentKind {
+  DEPOSIT
+  BALANCE
+  REFUND
+}
+
+model EventPayment {
+  id           String           @id @default(uuid(7))
+  eventId      String
+  kind         EventPaymentKind
+  method       PaymentMethod
+  amount       BigInt
+  status       PaymentStatus    @default(SUCCEEDED)
+  externalRef  String?
+  intentId     String?
+  receivedById String?
+  note         String?
+  paidAt       DateTime         @default(now())
+
+  event EventBooking @relation(fields: [eventId], references: [id])
+}
+
+enum BeoStatus {
+  DRAFT
+  ISSUED
+  SUPERSEDED
+}
+
+model EventOrderSheet {
+  id             String    @id @default(uuid(7))
+  eventId        String
+  version        Int
+  status         BeoStatus @default(DRAFT)
+  content        Json
+  pdfUrl         String?
+  issuedAt       DateTime?
+  issuedById     String?
+  acknowledgedBy Json      @default("[]")
+  createdAt      DateTime  @default(now())
+
+  event EventBooking @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, version])
+}
+
+enum EventAdjustmentKind {
+  EXTRA_TABLE
+  BEVERAGE
+  SERVICE
+  DAMAGE
+  DISCOUNT
+  OTHER
+}
+
+model EventAdjustment {
+  id          String              @id @default(uuid(7))
+  eventId     String
+  kind        EventAdjustmentKind
+  description String
+  quantity    Decimal             @default(1) @db.Decimal(10, 3)
+  unitPrice   BigInt              @default(0)
+  amount      BigInt
+  createdById String?
+  createdAt   DateTime            @default(now())
+
+  event EventBooking @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+// ───────────────────────────── K. Kho và định lượng ─────────────────────────────
+
+enum WarehouseKind {
+  MAIN
+  KITCHEN
+  BAR
+  COLD
+  CENTRAL
+  FACTORY
+}
+
+model Warehouse {
+  id       String        @id @default(uuid(7))
+  branchId String?
+  code     String        @unique
+  name     String
+  kind     WarehouseKind @default(MAIN)
+  isActive Boolean       @default(true)
+
+  branch        Branch?         @relation(fields: [branchId], references: [id])
+  levels        StockLevel[]
+  movements     StockMovement[]
+  receipts      GoodsReceipt[]
+  purchaseOrders PurchaseOrder[]
+  stocktakes    Stocktake[]
+  transfersOut  StockTransfer[] @relation("TransferFrom")
+  transfersIn   StockTransfer[] @relation("TransferTo")
+}
+
+model StockItem {
+  id                 String   @id @default(uuid(7))
+  orgId              String
+  code               String
+  name               String
+  category           String
+  baseUnit           String
+  purchaseUnit       String
+  purchaseUnitFactor Decimal  @default(1) @db.Decimal(12, 4)
+  minStock           Decimal? @db.Decimal(14, 3)
+  trackLots          Boolean  @default(false)
+  defaultSupplierId  String?
+  costPerBaseUnit    Decimal  @default(0) @db.Decimal(18, 4)
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  org            Organization        @relation(fields: [orgId], references: [id])
+  levels         StockLevel[]
+  movements      StockMovement[]
+  recipeLines    RecipeLine[]
+  poLines        PurchaseOrderLine[]
+  receiptLines   GoodsReceiptLine[]
+  transferLines  StockTransferLine[]
+  stocktakeLines StocktakeLine[]
+
+  @@unique([orgId, code])
+}
+
+model StockLevel {
+  warehouseId String
+  stockItemId String
+  quantity    Decimal  @default(0) @db.Decimal(14, 3)
+  updatedAt   DateTime @updatedAt
+
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+
+  @@id([warehouseId, stockItemId])
+}
+
+model Recipe {
+  id               String  @id @default(uuid(7))
+  itemId           String
+  variantId        String?
+  modifierOptionId String?
+  yieldQty         Decimal @default(1) @db.Decimal(10, 3)
+  notes            String?
+  isActive         Boolean @default(true)
+
+  item  MenuItem     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  lines RecipeLine[]
+
+  @@unique([itemId, variantId, modifierOptionId])
+}
+
+model RecipeLine {
+  id          String  @id @default(uuid(7))
+  recipeId    String
+  stockItemId String
+  quantity    Decimal @db.Decimal(14, 4)
+  wastageBps  Int     @default(0)
+
+  recipe    Recipe    @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+}
+
+model Supplier {
+  id           String  @id @default(uuid(7))
+  orgId        String
+  code         String
+  name         String
+  phone        String?
+  email        String?
+  address      String?
+  taxCode      String?
+  paymentTerms String?
+  notes        String?
+  isActive     Boolean @default(true)
+
+  org            Organization    @relation(fields: [orgId], references: [id])
+  purchaseOrders PurchaseOrder[]
+  receipts       GoodsReceipt[]
+
+  @@unique([orgId, code])
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  SENT
+  PARTIAL
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseOrder {
+  id           String              @id @default(uuid(7))
+  branchId     String
+  warehouseId  String
+  supplierId   String
+  code         String              @unique
+  status       PurchaseOrderStatus @default(DRAFT)
+  expectedDate DateTime?           @db.Date
+  total        BigInt              @default(0)
+  notes        String?
+  createdById  String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  branch    Branch              @relation(fields: [branchId], references: [id])
+  warehouse Warehouse           @relation(fields: [warehouseId], references: [id])
+  supplier  Supplier            @relation(fields: [supplierId], references: [id])
+  lines     PurchaseOrderLine[]
+  receipts  GoodsReceipt[]
+}
+
+model PurchaseOrderLine {
+  id          String  @id @default(uuid(7))
+  poId        String
+  stockItemId String
+  quantity    Decimal @db.Decimal(14, 3)
+  unit        String
+  unitPrice   BigInt
+  receivedQty Decimal @default(0) @db.Decimal(14, 3)
+
+  po        PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+  stockItem StockItem     @relation(fields: [stockItemId], references: [id])
+}
+
+model GoodsReceipt {
+  id              String   @id @default(uuid(7))
+  branchId        String
+  warehouseId     String
+  poId            String?
+  supplierId      String?
+  code            String   @unique
+  receivedAt      DateTime @default(now())
+  invoiceNo       String?
+  invoiceImageUrl String?
+  total           BigInt   @default(0)
+  notes           String?
+  createdById     String?
+
+  branch    Branch             @relation(fields: [branchId], references: [id])
+  warehouse Warehouse          @relation(fields: [warehouseId], references: [id])
+  po        PurchaseOrder?     @relation(fields: [poId], references: [id])
+  supplier  Supplier?          @relation(fields: [supplierId], references: [id])
+  lines     GoodsReceiptLine[]
+}
+
+model GoodsReceiptLine {
+  id          String    @id @default(uuid(7))
+  receiptId   String
+  stockItemId String
+  quantity    Decimal   @db.Decimal(14, 3)
+  unit        String
+  unitPrice   BigInt
+  lotCode     String?
+  expiresAt   DateTime? @db.Date
+
+  receipt   GoodsReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  stockItem StockItem    @relation(fields: [stockItemId], references: [id])
+}
+
+enum TransferStatus {
+  DRAFT
+  SENT
+  RECEIVED
+  CANCELLED
+}
+
+model StockTransfer {
+  id              String         @id @default(uuid(7))
+  fromWarehouseId String
+  toWarehouseId   String
+  code            String         @unique
+  status          TransferStatus @default(DRAFT)
+  sentAt          DateTime?
+  receivedAt      DateTime?
+  createdById     String?
+  receivedById    String?
+  notes           String?
+  createdAt       DateTime       @default(now())
+
+  fromWarehouse Warehouse           @relation("TransferFrom", fields: [fromWarehouseId], references: [id])
+  toWarehouse   Warehouse           @relation("TransferTo", fields: [toWarehouseId], references: [id])
+  lines         StockTransferLine[]
+}
+
+model StockTransferLine {
+  id               String   @id @default(uuid(7))
+  transferId       String
+  stockItemId      String
+  quantitySent     Decimal  @db.Decimal(14, 3)
+  quantityReceived Decimal? @db.Decimal(14, 3)
+
+  transfer  StockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  stockItem StockItem     @relation(fields: [stockItemId], references: [id])
+}
+
+enum StocktakeStatus {
+  DRAFT
+  COUNTING
+  REVIEW
+  APPROVED
+  CANCELLED
+}
+
+model Stocktake {
+  id           String          @id @default(uuid(7))
+  warehouseId  String
+  code         String          @unique
+  status       StocktakeStatus @default(DRAFT)
+  startedAt    DateTime        @default(now())
+  approvedAt   DateTime?
+  approvedById String?
+  notes        String?
+
+  warehouse Warehouse       @relation(fields: [warehouseId], references: [id])
+  lines     StocktakeLine[]
+}
+
+model StocktakeLine {
+  id            String   @id @default(uuid(7))
+  stocktakeId   String
+  stockItemId   String
+  expectedQty   Decimal  @db.Decimal(14, 3)
+  countedQty    Decimal? @db.Decimal(14, 3)
+  varianceQty   Decimal? @db.Decimal(14, 3)
+  varianceValue BigInt?
+
+  stocktake Stocktake @relation(fields: [stocktakeId], references: [id], onDelete: Cascade)
+  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+}
+
+enum StockMovementKind {
+  SALE
+  VOID_RETURN
+  PURCHASE
+  TRANSFER_OUT
+  TRANSFER_IN
+  STOCKTAKE_ADJ
+  WASTE
+  PRODUCTION_IN
+  PRODUCTION_OUT
+  MANUAL
+}
+
+model StockMovement {
+  id          String            @id @default(uuid(7))
+  warehouseId String
+  stockItemId String
+  kind        StockMovementKind
+  quantity    Decimal           @db.Decimal(14, 4)
+  unitCost    Decimal           @default(0) @db.Decimal(18, 4)
+  refType     String?
+  refId       String?
+  reason      String?
+  createdById String?
+  occurredAt  DateTime          @default(now())
+
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+
+  @@index([warehouseId, stockItemId, occurredAt])
+  @@index([refType, refId])
+}
+
+// ───────────────────────────── M. In ấn ─────────────────────────────
+
+enum PrinterKind {
+  RECEIPT
+  KITCHEN
+  LABEL
+}
+
+enum PrinterConnection {
+  NETWORK
+  USB
+  BLUETOOTH
+}
+
+model Printer {
+  id           String            @id @default(uuid(7))
+  branchId     String
+  code         String
+  name         String
+  kind         PrinterKind       @default(KITCHEN)
+  connection   PrinterConnection @default(NETWORK)
+  address      String?
+  paperWidthMm Int               @default(80)
+  isActive     Boolean           @default(true)
+  lastSeenAt   DateTime?
+
+  branch   Branch     @relation(fields: [branchId], references: [id])
+  stations Station[]
+  jobs     PrintJob[]
+
+  @@unique([branchId, code])
+}
+
+enum PrintJobKind {
+  KITCHEN_TICKET
+  KITCHEN_VOID
+  BILL_PROVISIONAL
+  BILL_FINAL
+  SHIFT_REPORT
+  DEPOSIT_RECEIPT
+  TEST
+  LABEL
+}
+
+enum PrintJobStatus {
+  QUEUED
+  SENT
+  PRINTED
+  FAILED
+  CANCELLED
+}
+
+model PrintJob {
+  id             String         @id @default(uuid(7))
+  branchId       String
+  printerId      String
+  kind           PrintJobKind
+  payload        Json
+  status         PrintJobStatus @default(QUEUED)
+  attempts       Int            @default(0)
+  error          String?
+  refType        String?
+  refId          String?
+  idempotencyKey String?        @unique
+  printedAt      DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  branch  Branch  @relation(fields: [branchId], references: [id])
+  printer Printer @relation(fields: [printerId], references: [id])
+
+  @@index([branchId, status])
+}
+
+// ───────────────────────────── Hệ thống: outbox, audit, idempotency, tích hợp, báo cáo ─────────────────────────────
+
+model DomainEvent {
+  id                 String    @id @default(uuid(7))
+  seq                BigInt    @default(autoincrement())
+  branchId           String?
+  type               String
+  aggregateType      String
+  aggregateId        String
+  payload            Json
+  actorStaffId       String?
+  actorParticipantId String?
+  occurredAt         DateTime  @default(now())
+  publishedAt        DateTime?
+  processedAt        DateTime?
+
+  @@unique([seq])
+  @@index([branchId, seq])
+  @@index([aggregateType, aggregateId])
+  @@index([processedAt])
+}
+
+model AuditLog {
+  id               String   @id @default(uuid(7))
+  orgId            String?
+  branchId         String?
+  actorStaffId     String?
+  actorCustomerId  String?
+  deviceId         String?
+  action           String
+  entityType       String
+  entityId         String
+  before           Json?
+  after            Json?
+  reason           String?
+  ip               String?
+  userAgent        String?
+  createdAt        DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([branchId, createdAt])
+  @@index([actorStaffId, createdAt])
+}
+
+model IdempotencyKey {
+  key            String   @id
+  scope          String
+  requestHash    String
+  responseStatus Int
+  responseBody   Json?
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+
+  @@index([expiresAt])
+}
+
+enum IntegrationKind {
+  PAYMENT
+  EINVOICE
+  MESSAGING
+  STORAGE
+}
+
+model IntegrationConfig {
+  id        String          @id @default(uuid(7))
+  branchId  String?
+  kind      IntegrationKind
+  provider  String
+  config    Json            @default("{}")
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  branch Branch? @relation(fields: [branchId], references: [id])
+
+  @@unique([branchId, kind, provider])
+}
+
+model DailySalesSummary {
+  id           String   @id @default(uuid(7))
+  branchId     String
+  businessDate DateTime @db.Date
+  hour         Int?
+  revenue      BigInt   @default(0)
+  bills        Int      @default(0)
+  guests       Int      @default(0)
+  sessions     Int      @default(0)
+  discounts    BigInt   @default(0)
+  voids        BigInt   @default(0)
+  byMethod     Json     @default("{}")
+  byCategory   Json     @default("{}")
+  updatedAt    DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@unique([branchId, businessDate, hour])
+}

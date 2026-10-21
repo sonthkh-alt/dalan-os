@@ -1,0 +1,23 @@
+{
+  "app": {
+    "title": "Dạ Lan",
+    "headerColor": "#8b1e2d",
+    "textColor": "white",
+    "statusBarColor": "#8b1e2d",
+    "leftButton": "back",
+    "statusBar": "transparent",
+    "actionBarHidden": true,
+    "hideAndroidBottomNavigationBar": false,
+    "hideIOSSafeAreaBottom": false
+  },
+  "template": {
+    "name": "dalan-restaurant",
+    "primaryColor": "#8b1e2d",
+    "secondaryColor": "#fbf7f0"
+  },
+  "debug": false,
+  "listCSS": [],
+  "listSyncJS": [],
+  "listAsyncJS": [],
+  "pages": []
+}

@@ -1,0 +1,55 @@
+{
+  "name": "@dalan/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prisma schema, migrations, client và seed dữ liệu Dạ Lan",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./enums": {
+      "types": "./dist/generated/prisma/enums.d.ts",
+      "default": "./dist/generated/prisma/enums.js"
+    },
+    "./models": {
+      "types": "./dist/generated/prisma/models.d.ts",
+      "default": "./dist/generated/prisma/models.js"
+    }
+  },
+  "files": ["dist", "prisma/schema.prisma", "prisma/migrations"],
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "migrate:reset": "prisma migrate reset --force",
+    "migrate:status": "prisma migrate status",
+    "validate": "prisma validate",
+    "seed": "tsx prisma/seed.ts",
+    "studio": "prisma studio",
+    "build": "prisma generate && tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src prisma/seed.ts",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "catalog:",
+    "@prisma/client": "catalog:",
+    "pg": "catalog:"
+  },
+  "devDependencies": {
+    "@dalan/config": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
+    "dotenv": "catalog:",
+    "eslint": "catalog:",
+    "prisma": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

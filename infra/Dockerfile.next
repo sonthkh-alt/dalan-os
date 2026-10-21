@@ -1,0 +1,29 @@
+# Dùng chung cho apps/staff và apps/guest: docker build -f infra/Dockerfile.next --build-arg APP=staff .
+# Yêu cầu next.config.ts của app có output: 'standalone' và outputFileTracingRoot trỏ về gốc monorepo.
+ARG APP=staff
+FROM node:24-alpine AS base
+RUN corepack enable && apk add --no-cache libc6-compat
+WORKDIR /repo
+
+FROM base AS build
+ARG APP
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json turbo.json ./
+COPY packages ./packages
+COPY apps/${APP} ./apps/${APP}
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @dalan/domain --filter @dalan/contracts build && pnpm --filter @dalan/${APP} build
+
+FROM node:24-alpine AS runtime
+ARG APP
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+WORKDIR /app
+COPY --from=build /repo/apps/${APP}/.next/standalone ./
+COPY --from=build /repo/apps/${APP}/.next/static ./apps/${APP}/.next/static
+COPY --from=build /repo/apps/${APP}/public ./apps/${APP}/public
+USER node
+EXPOSE 3000
+CMD ["sh", "-c", "node apps/${APP}/server.js"]

@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+
+  /* Màu thương hiệu Dạ Lan: đỏ đô dịu, vàng nhẹ */
+  --color-brand-50: #fdf3f4;
+  --color-brand-100: #fbe3e5;
+  --color-brand-200: #f5c3c8;
+  --color-brand-300: #ea949e;
+  --color-brand-400: #d85e6e;
+  --color-brand-500: #b93a4e;
+  --color-brand-600: #9c2a3d;
+  --color-brand-700: #7f2233;
+  --color-brand-800: #661d2b;
+  --color-brand-900: #4d1620;
+
+  --color-gold-100: #fbf1d8;
+  --color-gold-300: #efd38f;
+  --color-gold-500: #d9a441;
+  --color-gold-700: #a8762a;
+
+  --color-ink-900: #1f1b1c;
+  --color-ink-700: #3f3638;
+  --color-ink-500: #6f6467;
+  --color-ink-300: #b7adaf;
+  --color-ink-100: #ece6e7;
+  --color-paper: #faf7f5;
+
+  --color-status-empty: #e8e4e2;
+  --color-status-pending: #fde68a;
+  --color-status-seated: #bae6fd;
+  --color-status-cooking: #fdba74;
+  --color-status-ready: #86efac;
+  --color-status-bill: #c4b5fd;
+  --color-status-paid: #d1fae5;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--color-paper);
+  color: var(--color-ink-900);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+* {
+  touch-action: manipulation;
+}
+
+button,
+[role='button'] {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Thanh cuộn mảnh trên màn cảm ứng */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--color-ink-300);
+  border-radius: 999px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.6;
+  }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-toast-in {
+  animation: toast-in 0.18s ease-out;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

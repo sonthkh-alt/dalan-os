@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: dalan
+          POSTGRES_PASSWORD: dalan
+          POSTGRES_DB: dalan
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U dalan -d dalan" --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:8-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgresql://dalan:dalan@127.0.0.1:5432/dalan?schema=public
+      REDIS_URL: redis://127.0.0.1:6379
+      JWT_ACCESS_SECRET: ci-access-secret-0123456789abcdef0123456789abcdef
+      JWT_REFRESH_SECRET: ci-refresh-secret-0123456789abcdef0123456789abcdef
+      GUEST_TOKEN_SECRET: ci-guest-secret-0123456789abcdef0123456789abcdef
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @dalan/domain --filter @dalan/contracts --filter @dalan/db build
+      - run: pnpm --filter @dalan/db migrate:deploy
+      - run: pnpm db:seed
+      - run: pnpm --filter @dalan/domain --filter @dalan/contracts --filter @dalan/print-bridge test
+      - run: pnpm --filter @dalan/api build
+      - name: API smoke test
+        run: |
+          (node apps/api/dist/main.js > api.log 2>&1 &)
+          for i in $(seq 1 40); do grep -q "API sẵn sàng" api.log && break; sleep 1; done
+          node apps/api/scripts/smoke.mjs
+          node apps/api/scripts/smoke-dining-extra.mjs
+          node apps/api/scripts/smoke-reservations.mjs http://localhost:4000
+          node apps/api/scripts/smoke-payments.mjs http://localhost:4000
+          node apps/api/scripts/smoke-events-inventory.mjs http://localhost:4000
+          node apps/api/scripts/smoke-regressions.mjs http://localhost:4000
+      - run: pnpm --filter @dalan/staff --filter @dalan/guest --filter @dalan/print-bridge --filter @dalan/zalo-mini build
+      - run: pnpm lint
+        continue-on-error: true

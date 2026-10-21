@@ -1,0 +1,51 @@
+{
+  "name": "@dalan/staff",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ung dung nhan vien (PWA): POS phuc vu, thu ngan, KDS, le tan, quan tri",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@dalan/contracts": "workspace:*",
+    "@dalan/domain": "workspace:*",
+    "@dnd-kit/core": "catalog:",
+    "@hookform/resolvers": "catalog:",
+    "@tanstack/react-query": "catalog:",
+    "@tanstack/react-table": "catalog:",
+    "clsx": "catalog:",
+    "date-fns": "catalog:",
+    "dexie": "catalog:",
+    "lucide-react": "catalog:",
+    "next": "catalog:",
+    "qrcode": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-hook-form": "catalog:",
+    "recharts": "catalog:",
+    "socket.io-client": "catalog:",
+    "tailwind-merge": "catalog:",
+    "zod": "catalog:",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@dalan/config": "workspace:*",
+    "@next/eslint-plugin-next": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
+    "@types/qrcode": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "postcss": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

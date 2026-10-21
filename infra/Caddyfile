@@ -1,0 +1,19 @@
+# HTTPS tự động (Let's Encrypt). Đổi tên miền bằng biến môi trường trong docker-compose.prod.yml.
+{$DOMAIN_API} {
+	encode zstd gzip
+	reverse_proxy api:4000
+}
+
+{$DOMAIN_STAFF} {
+	encode zstd gzip
+	reverse_proxy staff:3000
+}
+
+{$DOMAIN_GUEST} {
+	encode zstd gzip
+	# Đường dẫn QR ngắn /q/<token> đi thẳng tới API
+	handle_path /q/* {
+		reverse_proxy api:4000
+	}
+	reverse_proxy guest:3000
+}

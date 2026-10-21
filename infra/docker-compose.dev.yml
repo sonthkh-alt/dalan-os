@@ -1,0 +1,37 @@
+name: dalan-dev
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: dalan-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dalan
+      POSTGRES_PASSWORD: dalan
+      POSTGRES_DB: dalan
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "5432:5432"
+    volumes:
+      - dalan-pg:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dalan -d dalan"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:8-alpine
+    container_name: dalan-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - dalan-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  dalan-pg:
+  dalan-redis:

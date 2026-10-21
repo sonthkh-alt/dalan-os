@@ -1,0 +1,6 @@
+# build cho zmp deploy
+www/
+# zmp login ghi APP_ID và ZMP_TOKEN vào .env
+.env
+.env.*
+!.env.example

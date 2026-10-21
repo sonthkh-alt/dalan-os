@@ -1,0 +1,74 @@
+@import 'tailwindcss';
+
+/* Màu thương hiệu Dạ Lan (đồng bộ với app khách web) */
+@theme {
+  --color-cream: #fbf7f0;
+  --color-cream-dark: #f1e9dc;
+  --color-paper: #ffffff;
+  --color-maroon: #8b1e2d;
+  --color-maroon-dark: #6e1522;
+  --color-maroon-soft: #f6e4e6;
+  --color-gold: #9a6f00;
+  --color-gold-soft: #fbf0d4;
+  --color-ink: #1f1a17;
+  --color-ink-soft: #5c524c;
+  --color-ink-muted: #8a7f78;
+  --color-line: #e6dccd;
+  --color-success: #1f7a4d;
+  --color-success-soft: #e3f3ea;
+  --color-warn: #b25f00;
+  --color-warn-soft: #fff1dc;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fde8e6;
+  --font-sans: 'Roboto', 'Segoe UI', 'Noto Sans', 'Helvetica Neue', Arial, system-ui, sans-serif;
+}
+
+/* Ghi đè màu chủ đạo của zmp-ui (nút, điều hướng) sang đỏ thương hiệu */
+:root {
+  color-scheme: light;
+  --zaui-light-color-primary: #8b1e2d;
+  --zaui-light-button-primary-background: #8b1e2d;
+  --zaui-light-button-primary-background-pressed: #6e1522;
+  --zaui-light-button-secondary-background: #f6e4e6;
+  --zaui-light-button-secondary-text: #8b1e2d;
+  --zaui-light-bottom-navigation-active-color: #8b1e2d;
+  --zaui-light-bottom-navigation-background-color: #ffffff;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}

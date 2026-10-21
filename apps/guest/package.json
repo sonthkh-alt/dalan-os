@@ -1,0 +1,50 @@
+{
+  "name": "@dalan/guest",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ung dung khach (PWA song ngu): QR tai ban, thuc don, goi mon, thanh toan, dat ban, thanh vien",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start --port 3001",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@dalan/contracts": "workspace:*",
+    "@dalan/domain": "workspace:*",
+    "@hookform/resolvers": "catalog:",
+    "@serwist/next": "catalog:",
+    "@tanstack/react-query": "catalog:",
+    "clsx": "catalog:",
+    "date-fns": "catalog:",
+    "dexie": "catalog:",
+    "lucide-react": "catalog:",
+    "next": "catalog:",
+    "next-intl": "catalog:",
+    "qrcode": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-hook-form": "catalog:",
+    "serwist": "catalog:",
+    "socket.io-client": "catalog:",
+    "tailwind-merge": "catalog:",
+    "zod": "catalog:",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@dalan/config": "workspace:*",
+    "@next/eslint-plugin-next": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "postcss": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

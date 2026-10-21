@@ -1,0 +1,44 @@
+{
+  "name": "@dalan/zalo-mini",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Zalo Mini App Da Lan: dang nhap Zalo, thuc don, dat ban, goi mon tai ban qua QR, diem va voucher, yeu cau tiec",
+  "type": "module",
+  "browserslist": [
+    "Android >= 5",
+    "IOS >= 9.3",
+    "Safari >= 9.1",
+    "Chrome >= 49"
+  ],
+  "scripts": {
+    "dev": "vite --port 3002",
+    "build": "vite build",
+    "preview": "vite preview --port 3002",
+    "typecheck": "tsc --noEmit",
+    "zmp:login": "npx --yes zmp-cli@4.0.3 login",
+    "zmp:start": "npx --yes zmp-cli@4.0.3 start",
+    "deploy": "vite build && npx --yes zmp-cli@4.0.3 deploy --existing --outputDir www",
+    "deploy:testing": "vite build && npx --yes zmp-cli@4.0.3 deploy --existing --outputDir www --testing"
+  },
+  "dependencies": {
+    "@dalan/contracts": "workspace:*",
+    "@dalan/domain": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "zmp-sdk": "2.53.2",
+    "zmp-ui": "1.11.14",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@dalan/config": "workspace:*",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "4.7.0",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "5.4.21",
+    "zmp-vite-plugin": "1.1.6"
+  }
+}

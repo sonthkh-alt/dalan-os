@@ -1,0 +1,491 @@
+{
+  "$schema": "./menu-seed.schema.json",
+  "source": "https://dalan.com.vn/ (ảnh thực đơn, truy cập 2026-10-20)",
+  "currency": "VND",
+  "note": "Giá trên website in theo nghìn đồng; trong file này đã quy đổi ra đồng. Món bán theo kg có pricingMode=weight; món giá theo thời điểm có pricingMode=market.",
+  "branches": [
+    { "code": "CENTER", "name": "Dạ Lan Center", "address": "Ngã tư phía Bắc, P. Hạc Thành, TP. Thanh Hóa (QL1A)", "phone": "02373852004", "capacity": 600 },
+    { "code": "STAR", "name": "Dạ Lan Star", "address": "630 Quang Trung 2, P. Hạc Thành, TP. Thanh Hóa", "phone": "02376615678", "capacity": null },
+    { "code": "EVENT", "name": "Dạ Lan Event", "address": "Lô 28 Công viên Hội An, P. Hạc Thành, TP. Thanh Hóa", "phone": "02378886999", "capacity": 1100 }
+  ],
+  "stations": [
+    { "code": "HOT", "name": "Bếp nóng" },
+    { "code": "COLD", "name": "Bếp nguội / Nộm" },
+    { "code": "GRILL", "name": "Bếp nướng / Quay" },
+    { "code": "HOTPOT", "name": "Lẩu / Cháo / Canh" },
+    { "code": "RICE", "name": "Cơm / Xôi / Bánh" },
+    { "code": "SEAFOOD", "name": "Hải sản sống (cân)" },
+    { "code": "BAR", "name": "Quầy đồ uống" },
+    { "code": "BREAKFAST", "name": "Bếp ăn sáng" }
+  ],
+  "menus": [
+    { "code": "ALACARTE", "name": "Thực đơn chọn món", "branches": ["CENTER", "STAR", "EVENT"], "availability": null },
+    { "code": "BREAKFAST_CENTER", "name": "Menu Breakfast (Center)", "branches": ["CENTER"], "availability": { "days": [1, 2, 3, 4, 5, 6, 7], "from": "06:00", "to": "10:00" } },
+    { "code": "BREAKFAST_EVENT", "name": "Menu Breakfast (Event)", "branches": ["EVENT"], "availability": { "days": [1, 2, 3, 4, 5, 6, 7], "from": "06:00", "to": "10:00" } },
+    { "code": "OFFICE_LUNCH", "name": "Cơm trưa văn phòng", "branches": ["CENTER", "STAR"], "availability": { "days": [1, 2, 3, 4, 5, 6], "from": "10:30", "to": "13:30" } },
+    { "code": "DRINKS", "name": "Thực đơn đồ uống", "branches": ["CENTER", "STAR", "EVENT"], "availability": null }
+  ],
+  "categories": [
+    {
+      "code": "NOM_SALAD", "name": "Nộm - Salad", "menu": "ALACARTE", "station": "COLD", "sort": 10,
+      "items": [
+        { "name": "Nộm rau má xứ Thanh", "unit": "đĩa", "price": 80000, "signature": true },
+        { "name": "Đậu Nhật xông muối", "unit": "đĩa", "price": 50000 },
+        { "name": "Salad trái cây", "unit": "đĩa", "price": 150000 },
+        { "name": "Gỏi mướp đắng ruốc", "unit": "đĩa", "price": 100000 },
+        { "name": "Nộm ngũ sắc", "unit": "đĩa", "price": 100000 },
+        { "name": "Nộm hoa chuối ngó sen tai heo", "unit": "đĩa", "price": 150000 },
+        { "name": "Salad trứng cua rong biển", "unit": "đĩa", "price": 150000 }
+      ]
+    },
+    {
+      "code": "KHAI_VI", "name": "Khai vị", "menu": "ALACARTE", "station": "HOT", "sort": 20,
+      "items": [
+        { "name": "Khai vị đồng quê", "unit": "đĩa", "price": 50000 },
+        { "name": "Nem trái cây bốn mùa", "unit": "cái", "price": 15000 },
+        { "name": "Nem Dạ Lan", "unit": "cái", "price": 25000, "signature": true },
+        { "name": "Nem rán truyền thống", "unit": "cái", "price": 30000 },
+        { "name": "Nem chua", "unit": "đĩa", "price": 80000 },
+        { "name": "Sake chiên", "unit": "đĩa", "price": 70000 },
+        { "name": "Ngô sữa chiên giòn", "unit": "đĩa", "price": 100000 },
+        { "name": "Khoai tây chiên", "unit": "đĩa", "price": 100000 }
+      ]
+    },
+    {
+      "code": "KHAI_VI_NONG", "name": "Khai vị nóng", "menu": "ALACARTE", "station": "HOT", "sort": 30,
+      "items": [
+        { "name": "Cua gạch nấu mẻ", "unit": "bát", "price": 150000 },
+        { "name": "Phi cầu Sài tiến Vua (thuôn hành răm)", "unit": "bát", "price": 120000, "signature": true },
+        { "name": "Hến Sông Mã / Giắt biển xào hành chăm", "unit": "đĩa", "price": 250000, "description": "Kèm bánh đa và nước cốt nấu thuôn", "modifiers": [{ "name": "Loại", "required": true, "options": ["Hến Sông Mã", "Giắt biển"] }] },
+        { "name": "Soup gà nấm hương / Đông trùng", "unit": "bát", "price": 60000, "modifiers": [{ "name": "Loại", "required": true, "options": ["Nấm hương", "Đông trùng"] }] },
+        { "name": "Soup bí đỏ kem tươi (soup rau)", "unit": "bát", "price": 60000, "vegetarian": true },
+        { "name": "Soup hải sản", "unit": "bát", "price": 80000 },
+        { "name": "Soup kem ngao", "unit": "bát", "price": 80000 },
+        { "name": "Soup cua gạch", "unit": "bát", "price": 130000 }
+      ]
+    },
+    {
+      "code": "BANH", "name": "Bánh", "menu": "ALACARTE", "station": "RICE", "sort": 40,
+      "items": [
+        { "name": "Bánh lá răng bừa đặc biệt", "unit": "cái", "price": 12000, "signature": true },
+        { "name": "Bánh bột lọc nhân tôm thịt", "unit": "cái", "price": 12000 }
+      ]
+    },
+    {
+      "code": "GA", "name": "Gà", "menu": "ALACARTE", "station": "HOT", "sort": 50,
+      "items": [
+        { "name": "Gà ri luộc rút xương", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 350000 }, { "name": "Lớn", "price": 550000 }] },
+        { "name": "Gà trộn tiêu dăm", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 350000 }, { "name": "Lớn", "price": 550000 }] },
+        { "name": "Gà chiên muối", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 285000 }, { "name": "Lớn", "price": 495000 }] },
+        { "name": "Gà chiên mắm", "unit": "đĩa", "price": 285000 },
+        { "name": "Gà nấu xáo", "unit": "tô", "price": 285000 },
+        { "name": "Gà bó xôi", "unit": "con", "price": 550000 },
+        { "name": "Gà quay mật ong", "unit": "con", "price": 495000, "station": "GRILL" },
+        { "name": "Gà tần hồng sâm, táo đỏ", "unit": "con", "price": 495000 },
+        { "name": "Cháo gà", "unit": "nồi", "price": 650000, "station": "HOTPOT" },
+        { "name": "Lẩu gà", "unit": "nồi", "price": 650000, "station": "HOTPOT" }
+      ]
+    },
+    {
+      "code": "VIT", "name": "Vịt", "menu": "ALACARTE", "station": "HOT", "sort": 60,
+      "items": [
+        { "name": "Vịt Cổ Lũng", "unit": "con", "price": 595000, "signature": true },
+        { "name": "Vịt trời hấp kèm xôi tiết", "unit": "con", "price": 500000 },
+        { "name": "Vịt trời hấp xôi bỏ lò", "unit": "đĩa", "price": 250000 },
+        { "name": "Vịt quay Quảng Đông", "unit": "con", "price": 450000, "station": "GRILL" },
+        { "name": "Vịt cỏ hấp", "unit": "con", "price": 450000 },
+        { "name": "Vịt cỏ quay lá móc mật", "unit": "con", "price": 450000, "station": "GRILL" },
+        { "name": "Vịt om sấu", "unit": "con", "price": 395000 },
+        { "name": "Vịt cỏ nấu xáo măng", "unit": "con", "price": 395000 },
+        { "name": "Vịt cỏ rút xương hấp lá sen", "unit": "con", "price": 450000 },
+        { "name": "Cháo vịt", "unit": "con", "price": 450000, "station": "HOTPOT" }
+      ]
+    },
+    {
+      "code": "CHIM", "name": "Chim bồ câu", "menu": "ALACARTE", "station": "HOT", "sort": 70,
+      "items": [
+        { "name": "Chim bồ câu quay mật ong", "unit": "con", "price": 200000, "station": "GRILL" },
+        { "name": "Chim bồ câu tần hạt sen & táo đỏ", "unit": "con", "price": 200000 },
+        { "name": "Chim bồ câu nấu cháo", "unit": "con", "price": 200000, "station": "HOTPOT" }
+      ]
+    },
+    {
+      "code": "DE", "name": "Dê", "menu": "ALACARTE", "station": "HOT", "sort": 80,
+      "items": [
+        { "name": "Dê núi tái chanh", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 400000 }, { "name": "Lớn", "price": 650000 }] },
+        { "name": "Dê núi xào lăn", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 450000 }, { "name": "Lớn", "price": 595000 }] },
+        { "name": "Dê núi ủ trấu", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 400000 }, { "name": "Lớn", "price": 650000 }] },
+        { "name": "Dê tần ngũ vị", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 395000 }, { "name": "Lớn", "price": 650000 }] },
+        { "name": "Tiết canh dê", "unit": "bát", "price": 50000, "station": "COLD" },
+        { "name": "Dê núi hấp xửng", "unit": "xửng", "price": 600000 },
+        { "name": "Dê nhúng dấm", "unit": "âu", "price": 450000, "station": "HOTPOT" },
+        { "name": "Cháo đậu xanh xương dê", "unit": "tô", "price": 200000, "station": "HOTPOT" }
+      ]
+    },
+    {
+      "code": "LON", "name": "Lợn", "menu": "ALACARTE", "station": "HOT", "sort": 90,
+      "items": [
+        { "name": "Bắp giò luộc", "unit": "đĩa", "price": 250000 },
+        { "name": "Bắp giò hầm ngũ vị", "unit": "tô", "price": 350000 },
+        { "name": "Chân giò nấu giả cầy", "unit": "tô", "price": 400000 },
+        { "name": "Chân giò chiên muối", "unit": "đĩa", "price": 350000 },
+        { "name": "Chân giò hầm sen nấm", "unit": "tô", "price": 400000 },
+        { "name": "Lợn quay", "unit": "đĩa", "price": 395000, "station": "GRILL" },
+        { "name": "Lòng lợn đặc biệt", "unit": "thố", "price": 500000 },
+        { "name": "Lợn mán kèm xôi nếp nương", "unit": "đĩa", "price": 295000 }
+      ]
+    },
+    {
+      "code": "BE", "name": "Bê", "menu": "ALACARTE", "station": "HOT", "sort": 100,
+      "items": [
+        { "name": "Bê hấp xửng", "unit": "xửng", "price": 395000 },
+        { "name": "Bê tái tương gừng", "unit": "đĩa", "price": 395000 }
+      ]
+    },
+    {
+      "code": "BO", "name": "Bò", "menu": "ALACARTE", "station": "HOT", "sort": 110,
+      "items": [
+        { "name": "Bò sốt vang", "unit": "thố", "variants": [{ "name": "Nhỏ", "price": 250000 }, { "name": "Lớn", "price": 450000 }] },
+        { "name": "Bắp bò sốt tiêu", "unit": "thố", "variants": [{ "name": "Nhỏ", "price": 250000 }, { "name": "Lớn", "price": 450000 }] },
+        { "name": "Đuôi bò luộc", "unit": "đĩa", "price": 200000 },
+        { "name": "Đuôi bò om cà xanh", "unit": "tô", "price": 200000 },
+        { "name": "Đuôi bò hầm ngũ vị", "unit": "âu", "price": 400000 },
+        { "name": "Bò nhúng nước dừa xiêm", "unit": "tô", "price": 320000, "station": "HOTPOT" },
+        { "name": "Bắp hoa bò bóp thấu", "unit": "đĩa", "price": 350000, "station": "COLD" },
+        { "name": "Bắp hoa bò luộc", "unit": "đĩa", "price": 250000 },
+        { "name": "Bắp hoa bò xào lá lốt / cần tỏi", "unit": "đĩa", "price": 250000, "modifiers": [{ "name": "Cách xào", "required": true, "options": ["Lá lốt", "Cần tỏi"] }] },
+        { "name": "Bò lúc lắc + khoai tây chiên", "unit": "đĩa", "price": 500000 },
+        { "name": "Sách bò xào khế", "unit": "đĩa", "price": 500000 },
+        { "name": "Lẩu riêu cua + bắp bò", "unit": "nồi", "price": 650000, "station": "HOTPOT" }
+      ]
+    },
+    {
+      "code": "HAI_SAN", "name": "Hải sản", "menu": "ALACARTE", "station": "HOT", "sort": 120,
+      "items": [
+        { "name": "Bí Nhật tiềm hải sản", "unit": "quả", "price": 110000 },
+        { "name": "Miến hấp hải sản", "unit": "đĩa", "price": 300000 },
+        { "name": "Miến xào cua", "unit": "đĩa", "price": 350000 },
+        { "name": "Miến xào tôm", "unit": "đĩa", "price": 400000 },
+        { "name": "Ngao vàng hấp mồng tơi", "unit": "kg", "price": 350000, "pricingMode": "weight" },
+        { "name": "Chả mực Hạ Long đặc biệt", "unit": "cái", "price": 50000 },
+        { "name": "Mực ống tươi", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 400000 }, { "name": "Lớn", "price": 600000 }] },
+        { "name": "Sò điệp xào ớt chuông", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 350000 }, { "name": "Lớn", "price": 500000 }] },
+        { "name": "Ốc hương đại dương", "unit": "kg", "price": 1690000, "pricingMode": "weight", "station": "SEAFOOD" },
+        { "name": "Ốc hương", "unit": "kg", "price": 1295000, "pricingMode": "weight", "station": "SEAFOOD" },
+        { "name": "Hàu nướng mỡ hành", "unit": "con", "price": 25000, "station": "GRILL" },
+        { "name": "Hàu Nhật sashimi", "unit": "con", "price": 115000, "station": "COLD" },
+        { "name": "Hàu Nhật nướng mỡ hành", "unit": "con", "price": 115000, "station": "GRILL" },
+        { "name": "Hàu Nhật nướng phô mai", "unit": "con", "price": 115000, "station": "GRILL" },
+        { "name": "Bạch tuộc nhúng mẻ", "unit": "thố", "price": 395000, "station": "HOTPOT" }
+      ]
+    },
+    {
+      "code": "CUA_BE", "name": "Cua bể", "menu": "ALACARTE", "station": "SEAFOOD", "sort": 130,
+      "items": [
+        { "name": "Cua gạch", "unit": "kg", "price": 1195000, "pricingMode": "weight", "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Hấp", "Rang me", "Rang muối", "Sốt ớt"] }] },
+        { "name": "Cua thịt", "unit": "kg", "price": 1095000, "pricingMode": "weight", "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Hấp", "Rang me", "Rang muối", "Sốt ớt"] }] },
+        { "name": "Cua Huỳnh Đế", "unit": "kg", "price": 5350000, "pricingMode": "weight" }
+      ]
+    },
+    {
+      "code": "TOM", "name": "Tôm", "menu": "ALACARTE", "station": "HOT", "sort": 140,
+      "items": [
+        { "name": "Tôm chiên tổ yến", "unit": "con", "price": 70000 },
+        { "name": "Tôm rảo chiên giòn", "unit": "đĩa", "price": 200000 },
+        { "name": "Tôm bao bột", "unit": "đĩa", "price": 350000 },
+        { "name": "Tôm bơi chao tỏi", "unit": "đĩa", "variants": [{ "name": "Nhỏ", "price": 250000 }, { "name": "Lớn", "price": 375000 }] },
+        { "name": "Bề bề", "unit": "kg", "price": 995000, "pricingMode": "weight", "station": "SEAFOOD" },
+        { "name": "Tôm hùm baby", "unit": "kg", "price": 1695000, "pricingMode": "weight", "station": "SEAFOOD" },
+        { "name": "Tôm hùm bông", "unit": "kg", "price": 2050000, "pricingMode": "weight", "station": "SEAFOOD" },
+        { "name": "Tôm Alaska", "unit": "kg", "price": null, "pricingMode": "market", "station": "SEAFOOD", "note": "Giá theo thời điểm" }
+      ]
+    },
+    {
+      "code": "CA", "name": "Cá", "menu": "ALACARTE", "station": "SEAFOOD", "sort": 150,
+      "items": [
+        { "name": "Cá mú (cá song)", "unit": "kg", "price": 750000, "pricingMode": "weight", "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Gỏi phi lê cá", "Nấu thuyền chài", "Phi lê cá hấp xì dầu", "Chiên xù"] }] },
+        { "name": "Cá trình bông", "unit": "kg", "price": 1695000, "pricingMode": "weight" },
+        { "name": "Cá trình ta", "unit": "kg", "price": 995000, "pricingMode": "weight" },
+        { "name": "Cá giò nấu thuyền chài", "unit": "kg", "price": 695000, "pricingMode": "weight" },
+        { "name": "Cá mẹm", "unit": "kg", "price": 1095000, "pricingMode": "weight", "description": "Gỏi; đầu, đuôi, xương cá nấu canh chua hoặc nấu cháo" }
+      ]
+    },
+    {
+      "code": "DO_DONG", "name": "Đồ đồng", "menu": "ALACARTE", "station": "HOT", "sort": 160,
+      "items": [
+        { "name": "Phi lê cá hồng chiên", "unit": "đĩa", "price": 350000 },
+        { "name": "Cá hồng hấp dưa", "unit": "con", "price": 350000 },
+        { "name": "Cá chép hấp dưa", "unit": "con", "price": 350000 },
+        { "name": "Gỏi cá nhệch", "unit": "kg", "price": 1595000, "pricingMode": "weight", "station": "COLD", "signature": true },
+        { "name": "Cá tầm nướng / om", "unit": "kg", "price": 695000, "pricingMode": "weight", "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Nướng", "Om"] }] },
+        { "name": "Ếch chiên lá lốt", "unit": "đĩa", "price": 350000 },
+        { "name": "Ếch om chuối đậu", "unit": "tô", "price": 395000 },
+        { "name": "Cá lăng nướng", "unit": "đĩa", "station": "GRILL", "variants": [{ "name": "Nhỏ", "price": 350000 }, { "name": "Lớn", "price": 450000 }] },
+        { "name": "Cá lăng om", "unit": "nồi", "variants": [{ "name": "Nhỏ", "price": 350000 }, { "name": "Lớn", "price": 450000 }] },
+        { "name": "Lươn cuộn thịt om", "unit": "niêu", "variants": [{ "name": "Nhỏ", "price": 280000 }, { "name": "Lớn", "price": 395000 }] }
+      ]
+    },
+    {
+      "code": "BABA", "name": "Ba ba", "menu": "ALACARTE", "station": "HOT", "sort": 170,
+      "items": [
+        { "name": "Ba ba trơn", "unit": "kg", "price": 995000, "pricingMode": "weight", "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Rang muối", "Om chuối đậu", "Cà xanh nấu rượu vang", "Hầm táo đỏ với đẳng sâm"] }] },
+        { "name": "Ba ba gai", "unit": "kg", "price": 1195000, "pricingMode": "weight", "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Rang muối", "Om chuối đậu", "Cà xanh nấu rượu vang", "Hầm táo đỏ với đẳng sâm"] }] }
+      ]
+    },
+    {
+      "code": "CA_HOI", "name": "Cá hồi", "menu": "ALACARTE", "station": "COLD", "sort": 180,
+      "items": [
+        { "name": "Cá hồi sashimi", "unit": "thuyền", "price": 645000 },
+        { "name": "Cá hồi áp chảo / nướng phô mai", "unit": "miếng", "price": 150000, "station": "HOT", "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Áp chảo", "Nướng phô mai"] }] },
+        { "name": "Cá hồi sốt chanh leo", "unit": "miếng", "price": 150000, "station": "HOT" }
+      ]
+    },
+    {
+      "code": "DAC_SAN", "name": "Đặc sản cao cấp", "menu": "ALACARTE", "station": "HOT", "sort": 190,
+      "items": [
+        { "name": "Bào ngư", "unit": "con", "price": 150000, "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Gỏi", "Tần hồng sâm"] }] },
+        { "name": "Tổ yến chưng nước cốt gà", "unit": "bát", "price": 500000 },
+        { "name": "Cá trích Nhật (sashimi)", "unit": "thuyền", "price": 695000, "station": "COLD" },
+        { "name": "Cá bơn Hàn Quốc", "unit": "kg", "price": 1695000, "pricingMode": "weight", "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Sashimi", "Chiên", "Lẩu"] }] },
+        { "name": "Cá tuyết Nhật áp chảo", "unit": "miếng", "price": 450000 }
+      ]
+    },
+    {
+      "code": "MON_RAU", "name": "Món rau", "menu": "ALACARTE", "station": "HOT", "sort": 200,
+      "items": [
+        { "name": "Ngọn bí xào / luộc", "unit": "đĩa", "price": 60000, "vegetarian": true, "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Xào", "Luộc"] }] },
+        { "name": "Ngọn su su xào", "unit": "đĩa", "price": 70000, "vegetarian": true },
+        { "name": "Ngọn mồng tơi xào / luộc", "unit": "đĩa", "price": 60000, "vegetarian": true, "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Xào", "Luộc"] }] },
+        { "name": "Bầu đất luộc", "unit": "đĩa", "price": 60000, "vegetarian": true },
+        { "name": "Mướp hương hấp nấm", "unit": "đĩa", "price": 70000, "vegetarian": true },
+        { "name": "Rau củ luộc", "unit": "đĩa", "price": 70000, "vegetarian": true },
+        { "name": "Hoa thiên lý xào tỏi", "unit": "đĩa", "price": 80000, "vegetarian": true },
+        { "name": "Mướp đắng xào trứng", "unit": "đĩa", "price": 80000 },
+        { "name": "Mướp đắng xào tôm nõn", "unit": "đĩa", "price": 150000 },
+        { "name": "Mướp đắng hầm hải sản", "unit": "tô", "price": 195000 },
+        { "name": "Ngô sữa xào tôm nõn", "unit": "đĩa", "price": 150000 },
+        { "name": "Lòng mề gà xào giá mướp", "unit": "đĩa", "price": 120000 },
+        { "name": "Đậu cô ve xào lòng gà", "unit": "đĩa", "price": 120000 },
+        { "name": "Đậu cô ve xào bò", "unit": "đĩa", "price": 200000 },
+        { "name": "Hoa lơ xào thịt bò", "unit": "đĩa", "price": 200000 },
+        { "name": "Măng tươi xào thịt bò", "unit": "đĩa", "price": 200000 }
+      ]
+    },
+    {
+      "code": "MON_CANH", "name": "Món canh", "menu": "ALACARTE", "station": "HOTPOT", "sort": 210,
+      "items": [
+        { "name": "Canh giắt nấu rau tập tàng", "unit": "tô", "price": 70000 },
+        { "name": "Canh giắt nấu chua", "unit": "tô", "price": 70000 },
+        { "name": "Canh cải nấu tôm", "unit": "tô", "price": 70000 },
+        { "name": "Canh cải nấu cá đồng", "unit": "tô", "price": 70000 },
+        { "name": "Canh cải nấu thịt", "unit": "tô", "price": 70000 },
+        { "name": "Canh thịt nạc nấu chua", "unit": "tô", "price": 100000 },
+        { "name": "Canh rau má nấu thịt nạc", "unit": "tô", "price": 100000 },
+        { "name": "Canh rau má nấu tôm", "unit": "tô", "price": 100000 },
+        { "name": "Canh cua đồng", "unit": "tô", "price": 100000 },
+        { "name": "Canh ngao nấu rau mồng tơi", "unit": "tô", "price": 70000 },
+        { "name": "Canh ngao nấu chua", "unit": "tô", "price": 100000 },
+        { "name": "Canh nấm nấu mọc", "unit": "bát", "price": 150000 },
+        { "name": "Hàu sữa nấu canh chua", "unit": "tô", "price": 150000 },
+        { "name": "Mướp đắng nhồi thịt", "unit": "tô", "price": 100000 },
+        { "name": "Khoai sọ hầm xương", "unit": "tô", "price": 120000 },
+        { "name": "Xương vịt hầm măng", "unit": "tô", "price": 120000 },
+        { "name": "Canh chua cá lăng", "unit": "tô", "price": 250000 },
+        { "name": "Măng khô hầm móng giò", "unit": "tô", "price": 300000 }
+      ]
+    },
+    {
+      "code": "MON_MAN", "name": "Món mặn", "menu": "ALACARTE", "station": "HOT", "sort": 220,
+      "items": [
+        { "name": "Kho quẹt", "unit": "niêu", "price": 50000 },
+        { "name": "Sườn cotlet", "unit": "miếng", "price": 50000 },
+        { "name": "Cá bống rim tiêu", "unit": "đĩa", "price": 80000 },
+        { "name": "Cá diếc kho Cung đình", "unit": "đĩa", "price": 100000, "signature": true },
+        { "name": "Cá thu sốt cà chua / chao hành", "unit": "đĩa", "price": 250000, "modifiers": [{ "name": "Chế biến", "required": true, "options": ["Sốt cà chua", "Chao hành"] }] },
+        { "name": "Trứng rán", "unit": "đĩa", "price": 100000 },
+        { "name": "Trứng đúc thịt", "unit": "đĩa", "price": 120000 },
+        { "name": "Thịt ba chỉ rang", "unit": "đĩa", "price": 120000 },
+        { "name": "Thịt ba chỉ rim tôm", "unit": "đĩa", "price": 250000 },
+        { "name": "Tôm nõn rim", "unit": "đĩa", "price": 250000 }
+      ]
+    },
+    {
+      "code": "XOI", "name": "Xôi", "menu": "ALACARTE", "station": "RICE", "sort": 230,
+      "items": [
+        { "name": "Xôi gấc", "unit": "đĩa", "price": 70000, "vegetarian": true },
+        { "name": "Xôi sen", "unit": "đĩa", "price": 70000, "vegetarian": true },
+        { "name": "Xôi lạc", "unit": "đĩa", "price": 70000, "vegetarian": true },
+        { "name": "Xôi đậu mỡ hành", "unit": "đĩa", "price": 100000 },
+        { "name": "Xôi chim bỏ lò", "unit": "đĩa", "price": 250000 },
+        { "name": "Xôi mít", "unit": "đĩa", "price": 100000, "vegetarian": true }
+      ]
+    },
+    {
+      "code": "COM", "name": "Cơm", "menu": "ALACARTE", "station": "RICE", "sort": 240,
+      "items": [
+        { "name": "Cơm tám", "unit": "âu", "price": 60000, "vegetarian": true },
+        { "name": "Cơm tám đốt nồi gang", "unit": "nồi", "price": 100000, "vegetarian": true },
+        { "name": "Cơm chiên Dương Châu", "unit": "đĩa", "price": 250000 },
+        { "name": "Cơm chiên trái thơm", "unit": "đĩa", "price": 200000 },
+        { "name": "Cơm chiên tôm trứng", "unit": "đĩa", "price": 250000 },
+        { "name": "Cơm chiên dưa bò", "unit": "đĩa", "price": 250000 },
+        { "name": "Cơm chiên hải sản", "unit": "đĩa", "price": 300000 },
+        { "name": "Cơm chiên cá rô đồng", "unit": "đĩa", "price": 150000 }
+      ]
+    },
+    {
+      "code": "COM_PHAN", "name": "Cơm phần", "menu": "ALACARTE", "station": "RICE", "sort": 250,
+      "items": [
+        { "name": "Cơm sườn cotlet", "unit": "phần", "price": 70000 },
+        { "name": "Cơm gà rang", "unit": "phần", "price": 100000 },
+        { "name": "Cơm cá diếc kho Cung đình", "unit": "phần", "price": 70000 },
+        { "name": "Cơm thịt kho tàu với trứng", "unit": "phần", "price": 100000 },
+        { "name": "Cơm thịt rim tôm", "unit": "phần", "price": 100000 },
+        { "name": "Cơm thịt ba chỉ rang", "unit": "phần", "price": 70000 },
+        { "name": "Cơm chiên hải sản", "unit": "phần", "price": 100000 },
+        { "name": "Cơm rang cá rô đồng", "unit": "phần", "price": 149000 },
+        { "name": "Cơm bò xào", "unit": "phần", "price": 100000 }
+      ]
+    },
+    {
+      "code": "BF_MIEN", "name": "Miến - Mỳ", "menu": "BREAKFAST_CENTER", "alsoMenus": ["BREAKFAST_EVENT"], "station": "BREAKFAST", "sort": 300,
+      "items": [
+        { "name": "Miến cá rô đồng", "unit": "bát", "variants": [{ "name": "Thường", "price": 60000 }, { "name": "Đặc biệt", "price": 90000 }] },
+        { "name": "Miến cá rô đồng bát đá", "unit": "bát", "price": 110000, "menus": ["BREAKFAST_EVENT"] },
+        { "name": "Miến cua gạch", "unit": "bát", "price": 195000, "modifiers": [{ "name": "Kiểu", "required": true, "options": ["Miến nước", "Miến xào"] }] },
+        { "name": "Miến tôm cải cúc", "unit": "bát", "price": 110000 },
+        { "name": "Miến / mỳ xào thịt bò", "unit": "đĩa", "price": 130000, "modifiers": [{ "name": "Loại sợi", "required": true, "options": ["Miến", "Mỳ"] }] },
+        { "name": "Mỳ udon hải sản bát đá", "unit": "bát", "price": 200000, "menus": ["BREAKFAST_EVENT"] }
+      ]
+    },
+    {
+      "code": "BF_PHO_BUN", "name": "Phở - Bún", "menu": "BREAKFAST_CENTER", "alsoMenus": ["BREAKFAST_EVENT"], "station": "BREAKFAST", "sort": 310,
+      "items": [
+        { "name": "Phở bò tái gầu", "unit": "bát", "price": 65000 },
+        { "name": "Phở bò sốt vang", "unit": "bát", "price": 90000 },
+        { "name": "Phở bò lõi bắp", "unit": "bát", "price": 110000 },
+        { "name": "Bún riêu cua", "unit": "bát", "price": 55000, "menus": ["BREAKFAST_CENTER"] },
+        { "name": "Bún riêu cua bò", "unit": "bát", "price": 90000, "menus": ["BREAKFAST_CENTER"] }
+      ]
+    },
+    {
+      "code": "BF_BO", "name": "Bò sáng", "menu": "BREAKFAST_CENTER", "alsoMenus": ["BREAKFAST_EVENT"], "station": "BREAKFAST", "sort": 320,
+      "items": [
+        { "name": "Bò sốt vang bánh mỳ", "unit": "phần", "price": 90000 },
+        { "name": "Bò đĩa nóng bánh mỳ", "unit": "phần", "price": 140000 },
+        { "name": "Bít tết kèm khoai tây chiên", "unit": "phần", "price": 160000 },
+        { "name": "Bò nhúng nước dừa xiêm", "unit": "phần", "price": 350000 }
+      ]
+    },
+    {
+      "code": "BF_XOI_CHAO", "name": "Xôi - Cháo", "menu": "BREAKFAST_CENTER", "alsoMenus": ["BREAKFAST_EVENT"], "station": "BREAKFAST", "sort": 330,
+      "items": [
+        { "name": "Xôi sườn cotlet", "unit": "đĩa", "price": 65000 },
+        { "name": "Xôi ruốc", "unit": "đĩa", "price": 55000 },
+        { "name": "Cháo đậu xanh", "unit": "bát", "price": 50000, "vegetarian": true },
+        { "name": "Cháo bào ngư", "unit": "bát", "price": 150000 },
+        { "name": "Cháo tôm", "unit": "bát", "price": 100000 },
+        { "name": "Cháo ngao vàng", "unit": "kg", "price": 380000, "pricingMode": "weight" }
+      ]
+    },
+    {
+      "code": "BF_BO_DUONG", "name": "Bồi bổ", "menu": "BREAKFAST_CENTER", "alsoMenus": ["BREAKFAST_EVENT"], "station": "BREAKFAST", "sort": 340,
+      "items": [
+        { "name": "Bào ngư tần hồng sâm", "unit": "con", "price": 150000 },
+        { "name": "Tổ yến chưng cốt gà", "unit": "bát", "price": 500000 }
+      ]
+    },
+    {
+      "code": "BF_CHO_QUE", "name": "Chợ quê (thứ 7, Chủ nhật)", "menu": "BREAKFAST_EVENT", "station": "BREAKFAST", "sort": 350,
+      "availability": { "days": [6, 7], "from": "06:00", "to": "10:00" },
+      "items": [
+        { "name": "Bánh cuốn nhân tôm thịt", "unit": "đĩa", "price": 30000 },
+        { "name": "Bánh cuốn trứng", "unit": "đĩa", "price": 30000 },
+        { "name": "Bánh khoái tép", "unit": "đĩa", "price": 30000 },
+        { "name": "Bánh khoái trứng", "unit": "đĩa", "price": 30000 }
+      ]
+    },
+    {
+      "code": "OL_COM", "name": "Cơm phần văn phòng", "menu": "OFFICE_LUNCH", "station": "RICE", "sort": 400,
+      "note": "Theo ảnh menu năm 2016 trên website, cần nhà hàng xác nhận giá hiện hành",
+      "items": [
+        { "name": "Cơm chiên", "unit": "phần", "price": 80000, "modifiers": [{ "name": "Loại", "required": true, "options": ["Hải sản", "Dưa bò", "Thập cẩm"] }] },
+        { "name": "Cơm gà rang", "unit": "phần", "price": 80000 },
+        { "name": "Cơm sườn cotlet", "unit": "phần", "price": 60000 },
+        { "name": "Cơm cá thu", "unit": "phần", "price": 60000 },
+        { "name": "Cơm trứng rán", "unit": "phần", "price": 60000 },
+        { "name": "Cơm vịt cà ri", "unit": "phần", "price": 60000 },
+        { "name": "Cơm cá diếc kho tộ", "unit": "phần", "price": 60000 },
+        { "name": "Cơm tôm đồng rim", "unit": "phần", "price": 60000 },
+        { "name": "Cơm thịt kho tàu", "unit": "phần", "price": 60000 }
+      ]
+    },
+    {
+      "code": "DR_CAFE", "name": "Cà phê", "menu": "DRINKS", "station": "BAR", "sort": 500,
+      "items": [
+        { "name": "Cà phê muối", "unit": "ly", "price": 35000 },
+        { "name": "Cà phê phin nâu", "unit": "ly", "price": 35000 },
+        { "name": "Cà phê phin đen", "unit": "ly", "price": 30000 },
+        { "name": "Cà phê ly nâu", "unit": "ly", "price": 35000 },
+        { "name": "Cà phê ly đen", "unit": "ly", "price": 30000 },
+        { "name": "Bạc sỉu", "unit": "ly", "price": 30000 }
+      ]
+    },
+    {
+      "code": "DR_TRA", "name": "Trà", "menu": "DRINKS", "station": "BAR", "sort": 510,
+      "items": [
+        { "name": "Trà tắc xí muội", "unit": "ly", "price": 45000 },
+        { "name": "Trà tắc mật ong", "unit": "ly", "price": 30000 },
+        { "name": "Trà đào cam sả", "unit": "ly", "price": 55000 },
+        { "name": "Trà xoài chanh dây", "unit": "ly", "price": 45000 },
+        { "name": "Trà gừng", "unit": "ly", "price": 30000 },
+        { "name": "Trà ướp sen (set)", "unit": "set", "price": 100000 },
+        { "name": "Trà búp (ấm)", "unit": "ấm", "price": 50000 },
+        { "name": "Dilmah nóng / lạnh", "unit": "ly", "price": 30000, "modifiers": [{ "name": "Nhiệt độ", "required": true, "options": ["Nóng", "Lạnh"] }] },
+        { "name": "Lipton nóng / lạnh", "unit": "ly", "price": 30000, "modifiers": [{ "name": "Nhiệt độ", "required": true, "options": ["Nóng", "Lạnh"] }] }
+      ]
+    },
+    {
+      "code": "DR_SINH_TO", "name": "Sinh tố - Dầm", "menu": "DRINKS", "station": "BAR", "sort": 520,
+      "items": [
+        { "name": "Sinh tố bơ sáp", "unit": "ly", "price": 60000 },
+        { "name": "Sinh tố chanh leo", "unit": "ly", "price": 50000 },
+        { "name": "Sinh tố xoài cát", "unit": "ly", "price": 40000 },
+        { "name": "Chanh leo dầm", "unit": "ly", "price": 50000 },
+        { "name": "Bơ sáp dầm", "unit": "ly", "price": 90000 },
+        { "name": "Sữa chua muối", "unit": "ly", "price": 45000 },
+        { "name": "Sữa chua chanh leo", "unit": "ly", "price": 30000 }
+      ]
+    },
+    {
+      "code": "DR_NUOC_EP", "name": "Nước ép", "menu": "DRINKS", "station": "BAR", "sort": 530,
+      "items": [
+        { "name": "Nước rau má", "unit": "ly", "price": 30000 },
+        { "name": "Đậu xanh rau má", "unit": "ly", "price": 35000 },
+        { "name": "Nước cam sành", "unit": "ly", "price": 59000 },
+        { "name": "Nước dưa hấu", "unit": "ly", "price": 30000 },
+        { "name": "Nước bưởi da xanh", "unit": "ly", "price": 100000 },
+        { "name": "Nước cam cà rốt", "unit": "ly", "price": 50000 },
+        { "name": "Nước ép táo", "unit": "ly", "price": 60000 },
+        { "name": "Nước chanh tươi", "unit": "ly", "price": 30000 },
+        { "name": "Nước chanh leo", "unit": "ly", "price": 50000 },
+        { "name": "Nước ép dứa", "unit": "ly", "price": 40000 },
+        { "name": "Dừa xiêm", "unit": "quả", "price": 48000 }
+      ]
+    },
+    {
+      "code": "DR_BIA_NUOC", "name": "Bia - Nước đóng chai (giá tạm, cần xác nhận)", "menu": "DRINKS", "station": "BAR", "sort": 540,
+      "note": "Website chưa đăng giá bia, rượu, nước ngọt. Các món dưới đây là giữ chỗ để thử nghiệm luồng đếm vỏ, cần nhà hàng cung cấp giá thật.",
+      "items": [
+        { "name": "Nước uống tinh khiết Dạ Lan", "unit": "chai", "price": 15000, "countEmpties": true, "ownBrand": true },
+        { "name": "Bia Thanh Hóa", "unit": "chai", "price": 20000, "countEmpties": true },
+        { "name": "Bia Hà Nội", "unit": "chai", "price": 22000, "countEmpties": true },
+        { "name": "Bia Heineken", "unit": "lon", "price": 30000, "countEmpties": true },
+        { "name": "Bia Tiger", "unit": "lon", "price": 25000, "countEmpties": true },
+        { "name": "Nước ngọt Coca-Cola", "unit": "lon", "price": 20000, "countEmpties": true },
+        { "name": "Rượu gạo truyền thống Dạ Lan", "unit": "chai", "price": 150000, "ownBrand": true },
+        { "name": "Khăn lạnh", "unit": "cái", "price": 5000, "countEmpties": true }
+      ]
+    }
+  ]
+}

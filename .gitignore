@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+.pnpm-store/
+# build
+dist/
+.next/
+out/
+.turbo/
+coverage/
+*.tsbuildinfo
+# prisma generated client
+packages/db/generated/
+# env
+.env
+.env.*
+!.env.example
+# logs and os
+*.log
+.DS_Store
+Thumbs.db
+# editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+# docker volumes
+infra/volumes/
+# playwright
+playwright-report/
+test-results/
+storage/
+
+# cấu hình cục bộ của Claude Code
+.claude/
+# bản build Zalo Mini App
+apps/zalo-mini/www/

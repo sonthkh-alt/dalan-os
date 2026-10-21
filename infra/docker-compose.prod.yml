@@ -1,0 +1,122 @@
+# Triển khai production trên một máy chủ: Caddy (HTTPS tự động) → api, staff, guest; PostgreSQL, Redis, sao lưu.
+# Dùng: docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod up -d --build
+name: dalan
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      DOMAIN_API: ${DOMAIN_API:-api.dalan.com.vn}
+      DOMAIN_STAFF: ${DOMAIN_STAFF:-app.dalan.com.vn}
+      DOMAIN_GUEST: ${DOMAIN_GUEST:-menu.dalan.com.vn}
+    depends_on: [api, staff, guest]
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file: .env.prod
+    environment:
+      NODE_ENV: production
+      API_PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dalan}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-dalan}?schema=public
+      REDIS_URL: redis://redis:6379
+      STORAGE_LOCAL_DIR: /repo/storage
+    volumes:
+      - uploads:/repo/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  migrate:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    command: ["sh", "-c", "cd packages/db && npx prisma migrate deploy"]
+    env_file: .env.prod
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dalan}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-dalan}?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  staff:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.next
+      args:
+        APP: staff
+        NEXT_PUBLIC_API_URL: https://${DOMAIN_API:-api.dalan.com.vn}
+    restart: unless-stopped
+
+  guest:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.next
+      args:
+        APP: guest
+        NEXT_PUBLIC_API_URL: https://${DOMAIN_API:-api.dalan.com.vn}
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dalan}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-dalan}
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dalan} -d ${POSTGRES_DB:-dalan}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "512mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backup:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER:-dalan}
+      POSTGRES_DB: ${POSTGRES_DB:-dalan}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-30}
+    volumes:
+      - backups:/backups
+      - ./backup.sh:/backup.sh:ro
+    entrypoint: ["sh", "-c", "while true; do sh /backup.sh; sleep 86400; done"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  redisdata:
+  uploads:
+  backups:
+  caddy-data:
+  caddy-config:

@@ -1,0 +1,18 @@
+{
+  "name": "Dạ Lan",
+  "framework": "react-typescript",
+  "cssPreProcessor": "css",
+  "includeTailwind": true,
+  "package": "zmp-ui",
+  "stateManagement": "zustand",
+  "newProject": false,
+  "template": "blank",
+  "theming": {
+    "customColor": true,
+    "color": "#8b1e2d",
+    "darkTheme": false,
+    "iconFonts": true,
+    "fillBars": false,
+    "useUiKits": true
+  }
+}

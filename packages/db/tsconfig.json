@@ -1,0 +1,11 @@
+{
+  "extends": "@dalan/config/tsconfig.node.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "noUncheckedIndexedAccess": false,
+    "verbatimModuleSyntax": false
+  },
+  "include": ["src/**/*.ts", "generated/**/*.ts"],
+  "exclude": ["dist", "node_modules", "prisma/seed.ts"]
+}

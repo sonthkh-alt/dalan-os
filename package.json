@@ -1,0 +1,32 @@
+{
+  "name": "dalan-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "He thong quan ly va dat mon Nha hang Da Lan (Thanh Hoa): API, app nhan vien, app khach, Zalo Mini App, cau in.",
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @dalan/db generate",
+    "db:migrate": "pnpm --filter @dalan/db migrate:dev",
+    "db:deploy": "pnpm --filter @dalan/db migrate:deploy",
+    "db:seed": "pnpm --filter @dalan/db seed",
+    "db:studio": "pnpm --filter @dalan/db studio",
+    "infra:up": "docker compose -f infra/docker-compose.dev.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.dev.yml down",
+    "infra:logs": "docker compose -f infra/docker-compose.dev.yml logs -f"
+  },
+  "devDependencies": {
+    "prettier": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
+  }
+}
