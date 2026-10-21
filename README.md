@@ -10,8 +10,8 @@ Tài liệu: [docs/spec](docs/spec) (đặc tả nghiệp vụ), [docs/architect
 
 Website giới thiệu và thực đơn (tĩnh): https://sonthkh-alt.github.io/dalan-os/
 
-Chạy toàn bộ hệ thống miễn phí trên Render bằng một nút bấm (cần tài khoản Render đăng nhập bằng
-GitHub). Hướng dẫn chi tiết, tài khoản dùng thử và giới hạn: [docs/van-hanh/dung-thu-mien-phi.md](docs/van-hanh/dung-thu-mien-phi.md).
+Chạy toàn bộ hệ thống miễn phí: cơ sở dữ liệu trên Neon, ứng dụng trên Render (triển khai bằng một nút bấm,
+đăng nhập bằng GitHub). Hướng dẫn chi tiết, tài khoản dùng thử và giới hạn: [docs/van-hanh/dung-thu-mien-phi.md](docs/van-hanh/dung-thu-mien-phi.md).
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sonthkh-alt/dalan-os)
 

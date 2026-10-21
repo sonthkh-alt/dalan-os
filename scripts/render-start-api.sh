@@ -5,10 +5,19 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-(cd packages/db && npx prisma migrate deploy)
+# Neon: migration và seed cần kết nối TRỰC TIẾP (không qua PgBouncer "-pooler"), và bỏ tham số
+# channel_binding mà công cụ migration của Prisma có thể không hỗ trợ. API vẫn dùng DATABASE_URL gốc.
+MIGRATE_URL="$(node -e '
+  const u = new URL(process.env.DATABASE_URL);
+  u.hostname = u.hostname.replace("-pooler.", ".");
+  u.searchParams.delete("channel_binding");
+  process.stdout.write(u.toString());
+')"
+
+(cd packages/db && DATABASE_URL="$MIGRATE_URL" npx prisma migrate deploy)
 
 # Seed lần đầu. NODE_ENV=production buộc dùng SEED_STAFF_PASSWORD / SEED_STAFF_PIN do người triển khai đặt.
-(cd packages/db && SEED_ONLY_IF_EMPTY=1 NODE_ENV=production npx tsx prisma/seed.ts)
+(cd packages/db && DATABASE_URL="$MIGRATE_URL" SEED_ONLY_IF_EMPTY=1 NODE_ENV=production npx tsx prisma/seed.ts)
 
 export NODE_ENV=production
 exec node apps/api/dist/main.js

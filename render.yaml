@@ -1,20 +1,15 @@
 # Render Blueprint: triển khai bản dùng thử DaLan OS trên gói MIỄN PHÍ của Render.
 # Hướng dẫn: docs/van-hanh/dung-thu-mien-phi.md
 #
-# Gồm: API (NestJS), app nhân viên, app khách (Next.js), PostgreSQL, Key Value (Redis).
+# Gồm: API (NestJS), app nhân viên, app khách (Next.js), Key Value (Redis) trên Render.
+# Cơ sở dữ liệu PostgreSQL dùng Neon (gói miễn phí, không hết hạn): tạo trước tại https://neon.tech
+# (vùng AWS Asia Pacific (Singapore)) rồi dán chuỗi kết nối vào DATABASE_URL khi Render hỏi.
 # Giới hạn gói miễn phí: dịch vụ web ngủ sau 15 phút không có truy cập (thức dậy ~1 phút),
-# PostgreSQL miễn phí hết hạn sau 30 ngày, Redis không lưu bền, tệp tải lên mất khi khởi động lại.
+# Redis không lưu bền, tệp tải lên mất khi khởi động lại.
 #
 # Địa chỉ công khai: Render cấp https://<tên-dịch-vụ>.onrender.com nếu tên còn trống. Các URL bên dưới
 # dựa trên tên dịch vụ. Nếu Render thêm hậu tố (tên đã có người dùng), sửa các biến *_URL trong
 # Dashboard theo địa chỉ thực tế rồi bấm "Manual Deploy" cho app nhân viên và app khách.
-
-databases:
-  - name: dalanos-db
-    plan: free
-    region: singapore
-    databaseName: dalan
-    user: dalan
 
 services:
   - type: keyvalue
@@ -42,10 +37,10 @@ services:
         - scripts/render-*.sh
         - pnpm-lock.yaml
     envVars:
+      # Chuỗi kết nối Neon, dạng postgresql://...neon.tech/neondb?sslmode=require
+      # (Render hỏi khi tạo Blueprint; script khởi động tự dùng kết nối trực tiếp cho migration)
       - key: DATABASE_URL
-        fromDatabase:
-          name: dalanos-db
-          property: connectionString
+        sync: false
       - key: REDIS_URL
         fromService:
           type: keyvalue
