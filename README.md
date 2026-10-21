@@ -10,6 +10,15 @@ Tài liệu: [docs/spec](docs/spec) (đặc tả nghiệp vụ), [docs/architect
 
 Website giới thiệu và thực đơn (tĩnh): https://sonthkh-alt.github.io/dalan-os/
 
+**Chạy liên tục 24/7, không ngủ (khuyên dùng):** máy chủ Oracle Cloud Always Free hoặc VPS Ubuntu bất
+kỳ, cài toàn bộ hệ thống bằng một lệnh. Hướng dẫn: [docs/van-hanh/may-chu-mien-phi-oracle.md](docs/van-hanh/may-chu-mien-phi-oracle.md).
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sonthkh-alt/dalan-os/main/infra/vps/install.sh | sudo bash
+```
+
+**Cách nhanh hơn nhưng ứng dụng ngủ khi không dùng:** Render + Neon, xem bên dưới.
+
 Chạy toàn bộ hệ thống miễn phí: cơ sở dữ liệu trên Neon, ứng dụng trên Render (triển khai bằng một nút bấm,
 đăng nhập bằng GitHub). Hướng dẫn chi tiết, tài khoản dùng thử và giới hạn: [docs/van-hanh/dung-thu-mien-phi.md](docs/van-hanh/dung-thu-mien-phi.md).
 

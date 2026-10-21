@@ -20,14 +20,21 @@ SIM 4G dự phòng.
 
 ## 2. Lần đầu triển khai
 
+Cách nhanh nhất trên máy chủ Ubuntu mới (cài Docker, mở tường lửa, tạo khóa bí mật, build, khởi động):
+
 ```bash
-git clone <repo> dalan && cd dalan
-cp infra/.env.prod.example infra/.env.prod   # điền mật khẩu, khóa JWT (openssl rand -base64 48), tên miền
-# Trỏ DNS A record của 3 tên miền về IP máy chủ trước khi chạy (Caddy xin chứng chỉ tự động)
+# Có tên miền riêng: trỏ DNS A record api/app/menu về IP máy chủ trước, rồi:
+curl -fsSL https://raw.githubusercontent.com/sonthkh-alt/dalan-os/main/infra/vps/install.sh | sudo DOMAIN_BASE=dalan.com.vn bash
+# Chưa có tên miền: bỏ DOMAIN_BASE, script dùng api.<IP>.sslip.io (vẫn có HTTPS)
+```
+
+Hướng dẫn từng bước trên Oracle Cloud miễn phí: `docs/van-hanh/may-chu-mien-phi-oracle.md`.
+
+Chạy tay (đã có `infra/.env.prod`, xem `infra/.env.prod.example`): API tự áp dụng migration và nạp dữ
+liệu mẫu khi cơ sở dữ liệu còn trống, dùng `SEED_STAFF_PASSWORD` và `SEED_STAFF_PIN` trong tệp env.
+
+```bash
 docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod up -d --build
-docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod run --rm migrate
-# Seed dữ liệu ban đầu (chỉ lần đầu; sau đó quản lý qua giao diện quản trị)
-docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod exec -e SEED_STAFF_PASSWORD="<mật khẩu mạnh>" -e SEED_STAFF_PIN="<PIN riêng>" api sh -c "cd packages/db && npx tsx prisma/seed.ts"
 ```
 
 Kiểm tra: `https://api.dalan.com.vn/health` trả `{"status":"ok"}`; `https://api.dalan.com.vn/docs` mở Swagger.
@@ -38,12 +45,14 @@ thanh toán trong mục Tích hợp.
 
 ## 3. Cập nhật phiên bản
 
+Chạy lại script `infra/vps/install.sh` (giữ nguyên dữ liệu và khóa bí mật), hoặc chạy tay:
+
 ```bash
 git pull
-docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod build
-docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod run --rm migrate
-docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod up -d
+docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod up -d --build
 ```
+
+API áp dụng migration mới mỗi lần khởi động.
 
 Migration của Prisma chỉ thêm, không xóa cột trong cùng phiên bản (quy ước), nên có thể quay lại
 image cũ nếu cần. Giữ ít nhất một bản sao lưu ngay trước khi cập nhật.

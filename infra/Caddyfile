@@ -1,4 +1,9 @@
-# HTTPS tự động (Let's Encrypt). Đổi tên miền bằng biến môi trường trong docker-compose.prod.yml.
+# HTTPS tự động (Let's Encrypt). Tên miền lấy từ biến môi trường trong docker-compose.prod.yml.
+# Không có tên miền riêng: dùng dạng api.<IP>.sslip.io (sslip.io trỏ về đúng địa chỉ IP trong tên).
+{
+	email {$ACME_EMAIL:admin@example.com}
+}
+
 {$DOMAIN_API} {
 	encode zstd gzip
 	reverse_proxy api:4000
@@ -9,11 +14,8 @@
 	reverse_proxy staff:3000
 }
 
+# Mã QR bàn trỏ tới https://<app khách>/q/<token>: đây là trang của app khách, app tự gọi API.
 {$DOMAIN_GUEST} {
 	encode zstd gzip
-	# Đường dẫn QR ngắn /q/<token> đi thẳng tới API
-	handle_path /q/* {
-		reverse_proxy api:4000
-	}
 	reverse_proxy guest:3000
 }
