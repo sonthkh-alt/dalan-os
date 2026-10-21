@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import type { RealtimeReport, SalesGroupBy, SalesRow, UploadResult } from '@dalan/contracts';
-import { API_BASE, ApiError, del, get, patch, post, put } from './api';
+import { API_BASE, ApiError, del, get, patch, post, put, toPublicUrl } from './api';
 import { useAuth } from './auth-store';
 import type { Branch } from './types';
 
@@ -518,5 +518,6 @@ export async function downloadReportCsv(params: Record<string, string | undefine
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
-export const QR_BASE_URL = 'https://menu.dalan.com.vn/q/';
+// Địa chỉ app khách in trên mã QR bàn; mặc định tên miền chính thức của nhà hàng
+export const QR_BASE_URL = `${toPublicUrl(process.env.NEXT_PUBLIC_GUEST_URL, 'https://menu.dalan.com.vn')}/q/`;
 export const tableQrUrl = (token: string) => `${QR_BASE_URL}${token}`;

@@ -1,6 +1,12 @@
 /** Lớp gọi API cho app khách: tự gắn token phiên khách hoặc token thành viên, chuẩn hóa lỗi. */
 
-export const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000').replace(/\/$/, '');
+/** Thêm https:// khi biến môi trường chỉ chứa tên máy chủ (Render Blueprint chỉ cung cấp host). */
+function toPublicUrl(value: string | undefined, fallback: string): string {
+  const v = (value ?? '').trim() || fallback;
+  return (/^https?:\/\//i.test(v) ? v : `https://${v}`).replace(/\/$/, '');
+}
+
+export const API_BASE = toPublicUrl(process.env.NEXT_PUBLIC_API_URL, 'http://localhost:4000');
 export const API_V1 = `${API_BASE}/api/v1`;
 
 export class ApiError extends Error {

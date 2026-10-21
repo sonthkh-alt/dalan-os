@@ -91,6 +91,15 @@ function resolveSeedCredentials(): { password?: string; pin?: string } {
 }
 
 async function main() {
+  // Kiểm tra mật khẩu/PIN TRƯỚC mọi thao tác ghi, để không để lại dữ liệu dở dang khi thiếu cấu hình.
+  // Mật khẩu/PIN mẫu công khai trong kho mã, chỉ dùng cho môi trường phát triển; production bắt buộc
+  // đặt SEED_STAFF_PASSWORD (tối thiểu 10 ký tự) và SEED_STAFF_PIN (4-6 số).
+  const credentials = resolveSeedCredentials();
+  // Khi khởi động trên nền tảng đám mây: chỉ seed lần đầu (cơ sở dữ liệu trống)
+  if (process.env.SEED_ONLY_IF_EMPTY === '1' && (await prisma.organization.count()) > 0) {
+    console.log('Đã có dữ liệu, bỏ qua seed.');
+    return;
+  }
   const seedPath = fileURLToPath(new URL('../../../data/seed/menu-dalan.json', import.meta.url));
   const seed = JSON.parse(readFileSync(seedPath, 'utf8')) as SeedFile;
 
@@ -169,9 +178,6 @@ async function main() {
     roles.set(code, role);
   }
 
-  // Mật khẩu/PIN mẫu bên dưới công khai trong kho mã, chỉ dùng cho môi trường phát triển.
-  // Production bắt buộc đặt SEED_STAFF_PASSWORD (tối thiểu 10 ký tự) và SEED_STAFF_PIN (4-6 số).
-  const credentials = resolveSeedCredentials();
   const staffDefs: { code: string; fullName: string; role: string; pin: string; password?: string; branches: string[] }[] = [
     { code: 'ADMIN', fullName: 'Quản trị hệ thống', role: 'ADMIN', pin: '1234', password: 'Dalan@2026', branches: ['CENTER', 'STAR', 'EVENT'] },
     { code: 'GD01', fullName: 'Ban giám đốc', role: 'DIRECTOR', pin: '9999', password: 'Dalan@2026', branches: ['CENTER', 'STAR', 'EVENT'] },

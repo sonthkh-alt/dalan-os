@@ -6,6 +6,15 @@ lễ tân, quản trị), ứng dụng khách (QR tại bàn, đặt bàn, thàn
 Tài liệu: [docs/spec](docs/spec) (đặc tả nghiệp vụ), [docs/architecture](docs/architecture)
 (kiến trúc, ADR), [docs/research](docs/research) (nghiên cứu nền tảng).
 
+## Dùng thử miễn phí trên Internet
+
+Website giới thiệu và thực đơn (tĩnh): https://sonthkh-alt.github.io/dalan-os/
+
+Chạy toàn bộ hệ thống miễn phí trên Render bằng một nút bấm (cần tài khoản Render đăng nhập bằng
+GitHub). Hướng dẫn chi tiết, tài khoản dùng thử và giới hạn: [docs/van-hanh/dung-thu-mien-phi.md](docs/van-hanh/dung-thu-mien-phi.md).
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sonthkh-alt/dalan-os)
+
 ## Yêu cầu
 
 - Node.js 24 LTS, pnpm 12 (`corepack enable pnpm`)

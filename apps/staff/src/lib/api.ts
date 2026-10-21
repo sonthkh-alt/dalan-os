@@ -3,7 +3,13 @@
 import { useAuth } from './auth-store';
 import { uuid } from './utils';
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000').replace(/\/$/, '');
+/** Thêm https:// khi biến môi trường chỉ chứa tên máy chủ (Render Blueprint chỉ cung cấp host). */
+export function toPublicUrl(value: string | undefined, fallback: string): string {
+  const v = (value ?? '').trim() || fallback;
+  return (/^https?:\/\//i.test(v) ? v : `https://${v}`).replace(/\/$/, '');
+}
+
+export const API_URL = toPublicUrl(process.env.NEXT_PUBLIC_API_URL, 'http://localhost:4000');
 export const API_BASE = `${API_URL}/api/v1`;
 
 export class ApiError extends Error {

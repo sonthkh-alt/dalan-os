@@ -1,0 +1,118 @@
+# Render Blueprint: triển khai bản dùng thử DaLan OS trên gói MIỄN PHÍ của Render.
+# Hướng dẫn: docs/van-hanh/dung-thu-mien-phi.md
+#
+# Gồm: API (NestJS), app nhân viên, app khách (Next.js), PostgreSQL, Key Value (Redis).
+# Giới hạn gói miễn phí: dịch vụ web ngủ sau 15 phút không có truy cập (thức dậy ~1 phút),
+# PostgreSQL miễn phí hết hạn sau 30 ngày, Redis không lưu bền, tệp tải lên mất khi khởi động lại.
+#
+# Địa chỉ công khai: Render cấp https://<tên-dịch-vụ>.onrender.com nếu tên còn trống. Các URL bên dưới
+# dựa trên tên dịch vụ. Nếu Render thêm hậu tố (tên đã có người dùng), sửa các biến *_URL trong
+# Dashboard theo địa chỉ thực tế rồi bấm "Manual Deploy" cho app nhân viên và app khách.
+
+databases:
+  - name: dalanos-db
+    plan: free
+    region: singapore
+    databaseName: dalan
+    user: dalan
+
+services:
+  - type: keyvalue
+    name: dalanos-redis
+    plan: free
+    region: singapore
+    maxmemoryPolicy: noeviction
+    # Chỉ cho phép truy cập từ mạng nội bộ của Render
+    ipAllowList: []
+
+  - type: web
+    name: dalanos-sonthkh-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: bash scripts/render-build.sh api
+    startCommand: bash scripts/render-start-api.sh
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    buildFilter:
+      paths:
+        - apps/api/**
+        - packages/**
+        - data/seed/**
+        - scripts/render-*.sh
+        - pnpm-lock.yaml
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dalanos-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: dalanos-redis
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: GUEST_TOKEN_SECRET
+        generateValue: true
+      - key: STAFF_APP_URL
+        value: https://dalanos-sonthkh-staff.onrender.com
+      - key: GUEST_APP_URL
+        value: https://dalanos-sonthkh-guest.onrender.com
+      # Mật khẩu và PIN cho mọi tài khoản nhân viên mẫu (Render hỏi khi tạo Blueprint)
+      - key: SEED_STAFF_PASSWORD
+        sync: false
+      - key: SEED_STAFF_PIN
+        sync: false
+      - key: PAYMENT_PROVIDERS
+        value: vietqr,mock
+      - key: EINVOICE_PROVIDER
+        value: mock
+      - key: MESSAGING_PROVIDER
+        value: mock
+      - key: LOG_LEVEL
+        value: info
+
+  - type: web
+    name: dalanos-sonthkh-staff
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: bash scripts/render-build.sh staff
+    startCommand: cd apps/staff && npx next start -p ${PORT:-10000}
+    autoDeployTrigger: commit
+    buildFilter:
+      paths:
+        - apps/staff/**
+        - packages/domain/**
+        - packages/contracts/**
+        - scripts/render-build.sh
+        - pnpm-lock.yaml
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://dalanos-sonthkh-api.onrender.com
+      - key: NEXT_PUBLIC_GUEST_URL
+        value: https://dalanos-sonthkh-guest.onrender.com
+      - key: NEXT_PUBLIC_DEMO
+        value: "1"
+
+  - type: web
+    name: dalanos-sonthkh-guest
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: bash scripts/render-build.sh guest
+    startCommand: cd apps/guest && npx next start -p ${PORT:-10000}
+    autoDeployTrigger: commit
+    buildFilter:
+      paths:
+        - apps/guest/**
+        - packages/domain/**
+        - packages/contracts/**
+        - scripts/render-build.sh
+        - pnpm-lock.yaml
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://dalanos-sonthkh-api.onrender.com

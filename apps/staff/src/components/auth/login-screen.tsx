@@ -81,6 +81,12 @@ function PasswordForm({ onDone }: { onDone: (r: AuthTokens & { me: StaffMe }) =>
       <Button type="submit" size="lg" block loading={loading}>
         Đăng nhập
       </Button>
+      {process.env.NEXT_PUBLIC_DEMO === '1' && (
+        <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+          Bản dùng thử: đăng nhập bằng mã <b>ADMIN</b> (quản trị), <b>QL-C</b> (quản lý Center), <b>GD01</b> (giám đốc) hoặc{' '}
+          <b>KDT01</b> (kinh doanh tiệc), với mật khẩu bạn đã đặt khi triển khai.
+        </p>
+      )}
     </form>
   );
 }

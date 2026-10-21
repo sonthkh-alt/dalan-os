@@ -1,12 +1,24 @@
 import { z } from 'zod';
 
+/**
+ * URL công khai. Chấp nhận cả tên máy chủ không có scheme (ví dụ Render Blueprint chỉ cung cấp
+ * `dalan-api.onrender.com`) và tự thêm `https://`.
+ */
+const publicUrl = (fallback: string) =>
+  z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() && !/^https?:\/\//i.test(v.trim()) ? `https://${v.trim()}` : v),
+    z.string().url().default(fallback),
+  );
+
 /** Biến môi trường của API, kiểm tra bằng Zod khi khởi động (NestJS 12 hỗ trợ Standard Schema). */
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  API_PORT: z.coerce.number().int().min(1).max(65535).default(4000),
-  API_PUBLIC_URL: z.string().url().default('http://localhost:4000'),
-  STAFF_APP_URL: z.string().url().default('http://localhost:3000'),
-  GUEST_APP_URL: z.string().url().default('http://localhost:3001'),
+  // Render và nhiều nền tảng đặt PORT; API_PORT được ưu tiên nếu có
+  API_PORT: z.coerce.number().int().min(1).max(65535).default(Number(process.env.PORT ?? 4000)),
+  // Render tự đặt RENDER_EXTERNAL_URL cho mỗi dịch vụ web
+  API_PUBLIC_URL: publicUrl(process.env.RENDER_EXTERNAL_URL ?? 'http://localhost:4000'),
+  STAFF_APP_URL: publicUrl('http://localhost:3000'),
+  GUEST_APP_URL: publicUrl('http://localhost:3001'),
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1).default('redis://127.0.0.1:6379'),
   JWT_ACCESS_SECRET: z.string().min(32),
